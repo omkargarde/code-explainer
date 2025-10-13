@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import openai, { OpenAI } from "openai";
+import { OpenAI } from "openai";
 
 const app = express();
 
