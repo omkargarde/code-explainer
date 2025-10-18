@@ -2,8 +2,6 @@
 import { environmentVariables } from "@/Env";
 import OpenAI from "openai";
 
-// Allow streaming responses up to 30 seconds
-
 export async function CallGemini(_initialState: any, formData: FormData) {
   const code = formData.get("code") as string;
   const language = (formData.get("language") as string) || "JavaScript";
