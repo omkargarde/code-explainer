@@ -8,7 +8,8 @@
     "start": "next start",
     "db:p": "npx drizzle-kit push",
     "db:g": "npx drizzle-kit generate",
-    "db:m": "npx drizzle-kit migrate"
+    "db:m": "npx drizzle-kit migrate",
+    "db:s": "bunx drizzle-kit studio"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
