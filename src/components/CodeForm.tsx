@@ -1,11 +1,13 @@
-import { useActionState, type ReactNode } from "react";
-import { LanguagesList } from "../constants/constants";
-import { explain } from "../actions";
+"use client";
+import { Suspense, useActionState, type ReactNode } from "react";
 import CodeExplanation from "./CodeExplanation";
 import Error from "./Error";
+import { LanguagesList } from "@/constants/constants";
+import { CallGemini } from "@/actions/CallGemini";
 
 export default function CodeForm() {
-  const [formState, formAction, isPending] = useActionState(explain, null);
+  const [formState, formAction, isPending] = useActionState(CallGemini, null);
+
   return (
     <>
       <div className="w-full max-w-4xl rounded-2xl bg-white shadow-lg">
@@ -41,10 +43,10 @@ export default function CodeForm() {
         </form>
         {isPending ? (
           <p className="my-3w-64 bg-gray-300 p-2">Thinking...</p>
-        ) : formState?.data !== null ? (
-          <CodeExplanation explanation={formState?.data.explanation.content} />
+        ) : formState?.data ? (
+          <CodeExplanation explanation={formState?.data.content} />
         ) : (
-          formState.error !== null && <Error error={formState.error} />
+          formState?.error && <Error error={formState?.error} />
         )}
       </div>
     </>
