@@ -11,8 +11,18 @@ export default function User() {
     return <h1>Loading</h1>;
   }
   return session?.user ? (
-    <button onClick={() => useSignOut()}>Sign out</button>
+    <button
+      className="cursor-pointer items-center justify-center rounded-lg bg-blue-500 px-4 py-3 align-middle font-semibold text-gray-200 transition-opacity hover:opacity-90 hover:shadow-lg"
+      onClick={() => useSignOut()}
+    >
+      Sign out
+    </button>
   ) : (
-    <button onClick={() => useSignIn()}>Sign in</button>
+    <button
+      className="cursor-pointer items-center justify-center rounded-lg bg-blue-500 px-4 py-3 align-middle font-semibold text-gray-200 transition-opacity hover:opacity-90 hover:shadow-lg"
+      onClick={() => useSignIn()}
+    >
+      Sign in
+    </button>
   );
 }

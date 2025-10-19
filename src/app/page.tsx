@@ -1,6 +1,11 @@
-import CodeEntry from "@/components/CodeEntry";
-import Image from "next/image";
+import User from "@/components/User";
 
 export default function Home() {
-  return <CodeEntry />;
+  return (
+    <main className="flex min-h-dvh items-center">
+      <section className="mx-auto">
+        <User />
+      </section>
+    </main>
+  );
 }

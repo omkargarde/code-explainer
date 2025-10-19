@@ -6,7 +6,7 @@ export const authClient = createAuthClient({});
 export async function useSignIn(url = "/") {
   const data = await authClient.signIn.social({
     provider: "github",
-    callbackURL: "url",
+    // callbackURL: "url",
   });
   return data;
 }
