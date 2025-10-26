@@ -15,6 +15,11 @@ const CallAiSchema = z.object({
 })
 type CallAiSchemaType = z.Infer<typeof CallAiSchema>
 
+const client = new OpenAI({
+  apiKey: environmentVariables.GOOGLE_GENERATIVE_AI_API_KEY,
+  baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+})
+
 export const callAi = createServerFn({ method: 'POST' })
   .inputValidator(CallAiSchema)
   .handler(async ({ data }) => {
@@ -31,11 +36,6 @@ export const callAi = createServerFn({ method: 'POST' })
 				`,
       },
     ]
-
-    const client = new OpenAI({
-      apiKey: environmentVariables.GOOGLE_GENERATIVE_AI_API_KEY,
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-    })
 
     const response = await client.chat.completions.create({
       model: 'gemini-2.0-flash',
