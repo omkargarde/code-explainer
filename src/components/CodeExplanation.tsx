@@ -1,8 +1,8 @@
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function CodeExplanation({ explanation }: { explanation: any }) {
-  console.log("explanation ::", explanation);
+  console.log('explanation ::', explanation)
 
   return (
     <>
@@ -11,5 +11,5 @@ export default function CodeExplanation({ explanation }: { explanation: any }) {
         <Markdown remarkPlugins={[remarkGfm]}>{explanation}</Markdown>
       </section>
     </>
-  );
+  )
 }

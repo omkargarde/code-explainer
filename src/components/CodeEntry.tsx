@@ -1,5 +1,5 @@
-import CodeForm from "./CodeForm";
-import Navbar from "./Navbar";
+import CodeForm from './CodeForm'
+import Navbar from './Navbar'
 
 export default function CodeEntry() {
   return (
@@ -7,5 +7,5 @@ export default function CodeEntry() {
       <Navbar />
       <CodeForm />
     </section>
-  );
+  )
 }

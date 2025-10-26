@@ -1,12 +1,12 @@
-import { type ReactNode } from 'react'
-import { LanguagesList } from '@/constants/constants'
 import { createServerFn, useServerFn } from '@tanstack/react-start'
 
 import OpenAI from 'openai'
 import { useMutation } from '@tanstack/react-query'
 import z from 'zod'
-import CodeExplanation from './CodeExplanation'
 import { ErrorComponent } from '@tanstack/react-router'
+import CodeExplanation from './CodeExplanation'
+import type { ReactNode } from 'react'
+import { LanguagesList } from '@/constants/constants'
 import { environmentVariables } from '@/Env'
 
 const CallAiSchema = z.object({
@@ -20,17 +20,18 @@ export const callAi = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { code, language } = data
     console.log('data received is ', data)
-    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-      {
-        role: 'system',
-        content: `you are a expert of ${language}, tasked with teaching the users.`,
-      },
-      {
-        role: 'user',
-        content: `please explain this ${language ?? 'JavaScript'} code in simple terms:\n\n\`\`\`${language}\n${code}\`\`\`
+    const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
+      [
+        {
+          role: 'system',
+          content: `you are a expert of ${language}, tasked with teaching the users.`,
+        },
+        {
+          role: 'user',
+          content: `please explain this ${language || 'JavaScript'} code in simple terms:\n\n\`\`\`${language}\n${code}\`\`\`
 				`,
-      },
-    ]
+        },
+      ]
 
     const client = new OpenAI({
       apiKey: environmentVariables.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -45,6 +46,8 @@ export const callAi = createServerFn({ method: 'POST' })
 
     const explanation = response.choices[0]?.message
     console.log('explanation generated is ', explanation)
+    // typescript is not type narrowing correctly
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!explanation) {
       const errorMessage = 'Failed to generate explanation.'
       console.log(errorMessage)
@@ -62,11 +65,12 @@ export default function CodeForm() {
   const getExplanation = useServerFn(callAi)
 
   const { mutate, isPending, isSuccess, data, isError, error } = useMutation({
-    mutationFn: (data: CallAiSchemaType) => getExplanation({ data }),
+    mutationFn: (postData: CallAiSchemaType) =>
+      getExplanation({ data: postData }),
     mutationKey: ['getExplanation'],
   })
 
-  async function submitForm(formData: FormData) {
+  function submitForm(formData: FormData) {
     const code = formData.get('code') as string
     const language = formData.get('language') as string
     mutate({ code, language })
@@ -106,10 +110,10 @@ export default function CodeForm() {
           </button>
         </form>
         {isPending && <p className="my-3w-64 bg-gray-300 p-2">Thinking...</p>}
-        {isSuccess && data && (
+        {isSuccess && (
           <CodeExplanation explanation={data.explanation?.content} />
         )}
-        {isError && error && <ErrorComponent error={error} />}
+        {isError && <ErrorComponent error={error} />}
       </div>
     </>
   )

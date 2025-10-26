@@ -9,7 +9,8 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        project: false,
+        project: './tsconfig.json', // ✅ correct relative path
+        tsconfigRootDir: import.meta.dirname, // ✅ works in flat config
       },
     },
   },
