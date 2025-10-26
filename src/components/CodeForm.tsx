@@ -7,7 +7,7 @@ import { useMutation } from '@tanstack/react-query'
 import z from 'zod'
 import CodeExplanation from './CodeExplanation'
 import { ErrorComponent } from '@tanstack/react-router'
-import { environmentVariables } from '../env'
+import { environmentVariables } from '@/env'
 
 const CallAiSchema = z.object({
   code: z.string().min(1),
