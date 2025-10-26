@@ -1,5 +1,4 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { environmentVariables } from "@/Env";
+import { drizzle } from 'drizzle-orm/singlestore/driver'
+import { environmentVariables } from '@/env'
 
-export const db = drizzle(environmentVariables.DATABASE_URL);
+export const db = drizzle(environmentVariables.DATABASE_URL)

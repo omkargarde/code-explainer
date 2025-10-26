@@ -1,9 +1,9 @@
 "use client";
 import { useSignIn, useSignOut } from "@/lib/auth-client";
-import { useUser } from "@/lib/user-session";
+import { getUser } from "@/lib/user-session";
 
 export default function User() {
-  const { session, isPending, error } = useUser();
+  const { session, isPending, error } = getUser();
   if (error) {
     // TODO: redirect to error page
   }

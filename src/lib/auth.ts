@@ -1,11 +1,13 @@
-import { db } from "@/db/database";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import * as schema from "@/db/schema";
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import * as schema from '@/db/schema'
+
+import { db } from '@/db/database'
+import { reactStartCookies } from 'better-auth/react-start'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
+    provider: 'pg', // or "mysql", "sqlite"
     schema: schema,
   }),
   socialProviders: {
@@ -14,4 +16,6 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
-});
+  // reactStartCookies has to be the last plugin in the array
+  plugins: [reactStartCookies()],
+})
