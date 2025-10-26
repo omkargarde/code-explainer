@@ -1,14 +1,12 @@
-"use client";
-import { useSignIn, useSignOut } from "@/lib/auth-client";
-import { getUser } from "@/lib/user-session";
+import { getUser, useSignIn, useSignOut } from '@/lib/auth-client'
 
 export default function User() {
-  const { session, isPending, error } = getUser();
+  const { session, isPending, error } = getUser()
   if (error) {
     // TODO: redirect to error page
   }
   if (isPending) {
-    return <h1>Loading</h1>;
+    return <h1>Loading</h1>
   }
   return session?.user ? (
     <button
@@ -24,5 +22,5 @@ export default function User() {
     >
       Sign in
     </button>
-  );
+  )
 }

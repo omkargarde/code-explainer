@@ -11,7 +11,7 @@ export default function Navbar() {
           </h1>
         </li>
         <li>
-          <Link to="/">Code entry</Link>
+          <Link to="/code">Code entry</Link>
         </li>
         <li>
           <User />
