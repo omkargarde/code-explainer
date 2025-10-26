@@ -14,6 +14,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@neondatabase/vite-plugin-postgres": "^0.2.3",
+    "@netlify/vite-plugin-tanstack-start": "^1.1.6",
     "@t3-oss/env-core": "^0.13.8",
     "@tailwindcss/vite": "^4.1.16",
     "@tanstack/react-devtools": "^0.7.8",
