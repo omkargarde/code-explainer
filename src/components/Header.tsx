@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 
 import { useState } from 'react'
-import { Code, Home, Menu, X } from 'lucide-react'
+import { Code, Home, Menu, Upload, X } from 'lucide-react'
 import User from './User'
 
 export default function Header() {
@@ -65,6 +65,18 @@ export default function Header() {
           >
             <Code size={20} />
             <span className="font-medium">Code</span>
+          </Link>
+          <Link
+            to="/upload"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <Upload size={20} />
+            <span className="font-medium">Upload</span>
           </Link>
         </nav>
       </aside>

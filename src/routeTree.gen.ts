@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UploadRouteImport } from './routes/upload'
 import { Route as CodeRouteImport } from './routes/code'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GenerateQuestionsRouteImport } from './routes/generate/questions'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CodeRoute = CodeRouteImport.update({
   id: '/code',
   path: '/code',
@@ -38,12 +44,14 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/code': typeof CodeRoute
+  '/upload': typeof UploadRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/code': typeof CodeRoute
+  '/upload': typeof UploadRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -51,26 +59,41 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/code': typeof CodeRoute
+  '/upload': typeof UploadRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/code' | '/generate/questions' | '/api/auth/$'
+  fullPaths: '/' | '/code' | '/upload' | '/generate/questions' | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/code' | '/generate/questions' | '/api/auth/$'
-  id: '__root__' | '/' | '/code' | '/generate/questions' | '/api/auth/$'
+  to: '/' | '/code' | '/upload' | '/generate/questions' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/code'
+    | '/upload'
+    | '/generate/questions'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CodeRoute: typeof CodeRoute
+  UploadRoute: typeof UploadRoute
   GenerateQuestionsRoute: typeof GenerateQuestionsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/code': {
       id: '/code'
       path: '/code'
@@ -105,6 +128,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CodeRoute: CodeRoute,
+  UploadRoute: UploadRoute,
   GenerateQuestionsRoute: GenerateQuestionsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
