@@ -3,5 +3,6 @@ words = [
     "llm",
     "lucide",
     "openai",
+    "prefersdark",
     "zod",
 ]
