@@ -2,13 +2,13 @@
 
 ## add ability to
 
-- [ ] read files from file system
+- [x] read files from file system
+- [ ] generate questions
+- [ ] create flash cards which asks random questions
+- [ ] answer should only be given in audio format
+- [ ] critique on the answers given
+- [ ] transcribe audio into text
 - [ ] add questions
 - [ ] add resume
 - [ ] add feedback
 - [ ] focus on particular topic
-- [ ] generate questions
-- [ ] create flash cards which asks random questions
-- [ ] critique on the answers given
-- [ ] answer should only be given in audio format
-- [ ] transcribe audio into text
