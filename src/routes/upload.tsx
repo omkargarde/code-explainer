@@ -1,45 +1,46 @@
-import { useMutation } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { createServerFn, useServerFn } from '@tanstack/react-start'
-import { useState } from 'react'
-import z from 'zod'
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn, useServerFn } from "@tanstack/react-start";
+import z from "zod";
 
-export const Route = createFileRoute('/upload')({
+export const Route = createFileRoute("/upload")({
   component: Upload,
-})
+});
 
-export const markdownUploadSchema = z.object({
-  files: z.instanceof(File).refine((val) => {
-    const files = Array.isArray(val) ? val : [val]
-    return files.every((file) => file.type === 'text/markdown')
-  }, 'Only markdown (.md) files are allowed'),
-})
+export const markdownUploadSchema = z
+  .instanceof(File)
+  .refine(
+    (file) => file.type === "text/markdown" || file.name.endsWith(".md"),
+    "Only markdown (.md) files are allowed",
+  )
+  .refine((file) => file.size > 0, "File cannot be empty");
 
-type markdownUploadSchemaType = z.Infer<typeof markdownUploadSchema>
+const isFormDataSchema = z.instanceof(FormData);
 
-export const uploadFilesFn = createServerFn({ method: 'POST' })
-  .inputValidator(markdownUploadSchema)
+type markdownUploadSchemaType = z.Infer<typeof markdownUploadSchema>;
+
+export const uploadFilesFn = createServerFn({ method: "POST" })
+  .inputValidator(isFormDataSchema)
   .handler(async ({ data }) => {
-    console.log(data.toString())
-  })
+    const file = data.get("file");
+    const parsedResult = markdownUploadSchema.safeParse(file);
+    if (!parsedResult.success) {
+      throw new Error(parsedResult.error.message);
+    }
+    const fileContent = await parsedResult.data.text();
+    console.log(fileContent);
+  });
 
 function Upload() {
-  const uploadFiles = useServerFn(uploadFilesFn)
-  const [clientError, setClientError] = useState<string | null>(null)
+  const uploadFiles = useServerFn(uploadFilesFn);
 
   const { mutate, isPending, isSuccess, isError, error } = useMutation({
-    mutationFn: (postData: markdownUploadSchemaType) =>
-      uploadFiles({ data: postData }),
-    mutationKey: ['uploadFiles'],
-  })
+    mutationFn: (postData: FormData) => uploadFiles({ data: postData }),
+    mutationKey: ["uploadFiles"],
+  });
 
   function handlerSubmit(formData: FormData) {
-    const files = formData.get('file')
-    if (!files || !(files instanceof File)) {
-      setClientError('failed to fetch files from device')
-      return
-    }
-    mutate({ files })
+    mutate(formData);
   }
 
   return (
@@ -57,7 +58,6 @@ function Upload() {
           />
           <label className="label">Max size 2MB</label>
         </fieldset>
-        {clientError && <span>{clientError}</span>}
         {isError && <span>{error.message}</span>}
         {isSuccess && <span>File was uploaded successfully</span>}
         <button
@@ -65,9 +65,9 @@ function Upload() {
           disabled={isPending}
           className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-xl"
         >
-          {isPending ? 'Uploading' : 'Upload'}
+          {isPending ? "Uploading" : "Upload"}
         </button>
       </form>
     </div>
-  )
+  );
 }
