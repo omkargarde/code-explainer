@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import z from "zod";
+import { DATA_DIRECTORY } from "@/constants/constants";
 
 export const Route = createFileRoute("/upload")({
   component: Upload,
@@ -35,7 +36,7 @@ export const uploadFilesFn = createServerFn({ method: "POST" })
     const file = parsedResult.data;
 
     // Directory where markdown files are saved
-    const MARKDOWN_DIR = path.join(process.cwd(), "src/data/uploads");
+    const MARKDOWN_DIR = path.join(process.cwd(), DATA_DIRECTORY);
 
     // Ensure directory exists
     if (!fs.existsSync(MARKDOWN_DIR)) {
