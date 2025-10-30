@@ -1,3 +1,5 @@
+import path from "node:path";
+import fs from "node:fs";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
@@ -17,16 +19,43 @@ export const markdownUploadSchema = z
 
 const isFormDataSchema = z.instanceof(FormData);
 
-type markdownUploadSchemaType = z.Infer<typeof markdownUploadSchema>;
-
 export const uploadFilesFn = createServerFn({ method: "POST" })
   .inputValidator(isFormDataSchema)
   .handler(async ({ data }) => {
-    const file = data.get("file");
-    const parsedResult = markdownUploadSchema.safeParse(file);
+    const unParsedFile = data.get("file");
+
+    const parsedResult = markdownUploadSchema.safeParse(unParsedFile);
     if (!parsedResult.success) {
-      throw new Error(parsedResult.error.message);
+      const errorMsg = parsedResult.error.issues
+        .map((i) => i.message)
+        .join(", ");
+      throw new Error(`Invalid upload: ${errorMsg}`);
     }
+
+    const file = parsedResult.data;
+
+    // Directory where markdown files are saved
+    const MARKDOWN_DIR = path.join(process.cwd(), "src/data/uploads");
+
+    // Ensure directory exists
+    if (!fs.existsSync(MARKDOWN_DIR)) {
+      fs.mkdirSync(MARKDOWN_DIR, { recursive: true });
+    }
+
+    const filePath = path.join(MARKDOWN_DIR, file.name);
+    const content = await file.text();
+
+    if (fs.existsSync(filePath)) {
+      // If file exists → append content
+      fs.appendFileSync(
+        filePath,
+        `\n\n---\n\n# Appended on ${new Date().toISOString()}\n\n${content}`,
+      );
+    } else {
+      // If file does not exist → create new file
+      fs.writeFileSync(filePath, content);
+    }
+
     const fileContent = await parsedResult.data.text();
     console.log(fileContent);
   });
@@ -34,7 +63,7 @@ export const uploadFilesFn = createServerFn({ method: "POST" })
 function Upload() {
   const uploadFiles = useServerFn(uploadFilesFn);
 
-  const { mutate, isPending, isSuccess, isError, error } = useMutation({
+  const { mutate, isPending, isSuccess, data, isError, error } = useMutation({
     mutationFn: (postData: FormData) => uploadFiles({ data: postData }),
     mutationKey: ["uploadFiles"],
   });
