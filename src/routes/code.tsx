@@ -1,86 +1,80 @@
-import { ErrorComponent, createFileRoute } from '@tanstack/react-router'
+import { ErrorComponent, createFileRoute } from "@tanstack/react-router";
 
-import { createServerFn, useServerFn } from '@tanstack/react-start'
+import { createServerFn, useServerFn } from "@tanstack/react-start";
 
-import OpenAI from 'openai'
-import { useMutation } from '@tanstack/react-query'
-import z from 'zod'
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import type { ReactNode } from 'react'
-import { LanguagesList } from '@/constants/constants'
-import { environmentVariables } from '@/Env'
+import { useMutation } from "@tanstack/react-query";
+import z from "zod";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type OpenAI from "openai";
+import type { ReactNode } from "react";
+import { LanguagesList } from "@/constants/constants";
+import { environmentVariables } from "@/Env";
+import { fetchAIResponse } from "@/utils/llmClient";
 
-export const Route = createFileRoute('/code')({
+export const Route = createFileRoute("/code")({
   component: Code,
-})
+});
 
 const CallAiSchema = z.object({
   code: z.string().min(1),
   language: z.string().min(0),
-})
-type CallAiSchemaType = z.Infer<typeof CallAiSchema>
+});
+type CallAiSchemaType = z.Infer<typeof CallAiSchema>;
 
-export const callAi = createServerFn({ method: 'POST' })
+export const callAi = createServerFn({ method: "POST" })
   .inputValidator(CallAiSchema)
   .handler(async ({ data }) => {
-    const { code, language } = data
-    console.log('data received is ', data)
+    const { code, language } = data;
+    console.log("data received is ", data);
+    
     const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
       [
         {
-          role: 'system',
+          role: "system",
           content: `you are a expert of ${language}, tasked with teaching the users.`,
         },
         {
-          role: 'user',
-          content: `please explain this ${language || 'JavaScript'} code in simple terms:\n\n\`\`\`${language}\n${code}\`\`\`
+          role: "user",
+          content: `please explain this ${language || "JavaScript"} code in simple terms:\n\n\`\`\`${language}\n${code}\`\`\`
 				`,
         },
-      ]
+      ];
 
-    const client = new OpenAI({
-      apiKey: environmentVariables.GOOGLE_GENERATIVE_AI_API_KEY,
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
-    })
+    const response = await fetchAIResponse(messages);
 
-    const response = await client.chat.completions.create({
-      model: 'gemini-2.0-flash',
-      messages,
-      temperature: 0.3,
-    })
+    const explanation = response.choices[0]?.message;
+    console.log("explanation generated is ", explanation);
 
-    const explanation = response.choices[0]?.message
-    console.log('explanation generated is ', explanation)
     // typescript is not type narrowing correctly
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!explanation) {
-      const errorMessage = 'Failed to generate explanation.'
-      console.log(errorMessage)
+      const errorMessage = "Failed to generate explanation.";
+      console.log(errorMessage);
       return {
         error: errorMessage,
-      }
+      };
     }
 
     return {
       explanation: explanation,
-    }
-  })
+    };
+  });
 
 function Code() {
-  const getExplanation = useServerFn(callAi)
+  const getExplanation = useServerFn(callAi);
 
   const { mutate, isPending, isSuccess, data, isError, error } = useMutation({
     mutationFn: (postData: CallAiSchemaType) =>
       getExplanation({ data: postData }),
-    mutationKey: ['getExplanation'],
-  })
+    mutationKey: ["getExplanation"],
+  });
 
   function submitForm(formData: FormData) {
-    const code = formData.get('code') as string
-    const language = formData.get('language') as string
-    mutate({ code, language })
-    console.log(data)
+    const code = formData.get("code") as string;
+    const language = formData.get("language") as string;
+    mutate({ code, language });
+    console.log(data);
   }
 
   return (
@@ -112,7 +106,7 @@ function Code() {
             // disabled={isPending}
             className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isPending ? 'Explaining' : 'Explain Code'}
+            {isPending ? "Explaining" : "Explain Code"}
           </button>
         </form>
         {isPending && <p className="my-3w-64 bg-gray-300 p-2">Thinking...</p>}
@@ -122,11 +116,11 @@ function Code() {
         {isError && <ErrorComponent error={error} />}
       </div>
     </section>
-  )
+  );
 }
 
 function CodeExplanation({ explanation }: { explanation: any }) {
-  console.log('explanation ::', explanation)
+  console.log("explanation ::", explanation);
 
   return (
     <>
@@ -135,19 +129,19 @@ function CodeExplanation({ explanation }: { explanation: any }) {
         <Markdown remarkPlugins={[remarkGfm]}>{explanation}</Markdown>
       </section>
     </>
-  )
+  );
 }
 
 function Label({
   htmlFor,
   children,
 }: {
-  htmlFor: string
-  children: ReactNode
+  htmlFor: string;
+  children: ReactNode;
 }) {
   return (
     <label htmlFor={htmlFor} className="mb-2 block font-semibold">
       {children}
     </label>
-  )
+  );
 }

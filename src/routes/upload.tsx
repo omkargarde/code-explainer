@@ -43,28 +43,22 @@ export const uploadFilesFn = createServerFn({ method: "POST" })
       fs.mkdirSync(MARKDOWN_DIR, { recursive: true });
     }
 
-    const filePath = path.join(MARKDOWN_DIR, file.name);
-    const content = await file.text();
+    const filePath = path.join(MARKDOWN_DIR, "questions.md");
+    const fileContents = await file.text();
 
     if (fs.existsSync(filePath)) {
       // If file exists → append content
-      fs.appendFileSync(
-        filePath,
-        `\n\n---\n\n# Appended on ${new Date().toISOString()}\n\n${content}`,
-      );
+      fs.appendFileSync(filePath, fileContents);
     } else {
       // If file does not exist → create new file
-      fs.writeFileSync(filePath, content);
+      fs.writeFileSync(filePath, fileContents);
     }
-
-    const fileContent = await parsedResult.data.text();
-    console.log(fileContent);
   });
 
 function Upload() {
   const uploadFiles = useServerFn(uploadFilesFn);
 
-  const { mutate, isPending, isSuccess, data, isError, error } = useMutation({
+  const { mutate, isPending, isSuccess, isError, error } = useMutation({
     mutationFn: (postData: FormData) => uploadFiles({ data: postData }),
     mutationKey: ["uploadFiles"],
   });
