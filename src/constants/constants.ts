@@ -26,7 +26,10 @@ export const LanguagesList = [
   "CSS",
 ] as const;
 
-export const DATA_DIRECTORY = "src/data/uploads";
+export const DATA_DIRECTORY = {
+  upload: "src/data/uploads",
+  existing_response: "src/data/generated",
+};
 
 export const PROMPTS = {
   question_generation_for_javascript_and_react: `Act as a JavaScript and React interviewer based in India. Generate a structured list of interview questions in JSON format to evaluate a candidate’s proficiency in JavaScript (covering topics like ES6 features, closures, promises, async/await, and DOM manipulation) and React (covering hooks, life cycle methods, state management, context API, and performance optimization).

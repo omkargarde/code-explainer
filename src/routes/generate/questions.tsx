@@ -1,13 +1,13 @@
+import path from "node:path";
+import fs from "node:fs";
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+import { createServerFn, useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import type OpenAI from "openai";
 import { fetchAIResponse } from "@/utils/llmClient";
-import { PROMPTS } from "@/constants/constants";
+import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants";
 
 export const Route = createFileRoute("/generate/questions")({
-  loader: async () => {
-    return generateQuestionFn();
-  },
   component: Questions,
 });
 
@@ -21,6 +21,26 @@ export interface QuestionsInterface {
 
 const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
+    // Directory where markdown files are saved
+    const RESPONSE_DIR = path.join(
+      process.cwd(),
+      DATA_DIRECTORY.existing_response,
+    );
+
+    // Ensure directory exists
+    if (!fs.existsSync(RESPONSE_DIR)) {
+      fs.mkdirSync(RESPONSE_DIR, { recursive: true });
+    }
+    const filePath = path.join(RESPONSE_DIR, "questions.md");
+
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, "");
+    }
+
+    const file_content = fs.readFileSync(filePath, "utf-8");
+    if (file_content.trim() !== "") {
+      return JSON.parse(file_content) as Array<QuestionsInterface>;
+    }
     const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
       [
         {
@@ -46,16 +66,32 @@ const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     const returnPayload = JSON.parse(
       cleanedContent,
     ) as Array<QuestionsInterface>;
-    // console.log(returnPayload);
-    // return response.choices[0].message;
+
+    fs.writeFileSync(filePath, JSON.stringify(returnPayload));
     return returnPayload;
   },
 );
 
 function Questions() {
-  const questions = Route.useLoaderData();
+  const generateQuestion = useServerFn(generateQuestionFn);
 
-  // We can assume by this point that `isSuccess === true`
+  const {
+    isPending,
+    isError,
+    data: questions,
+    error,
+  } = useQuery({
+    queryFn: generateQuestion,
+    queryKey: ["uploadFiles"],
+  });
+  if (isError) {
+    return <h1>{error.message}</h1>;
+  }
+  if (isPending) {
+    return <h1>Loading...</h1>;
+  }
+  console.log(questions);
+
   return (
     <section>
       <h1 className="text-2xl">Interview questions </h1>

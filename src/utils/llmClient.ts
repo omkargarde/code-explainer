@@ -12,7 +12,7 @@ export async function fetchAIResponse(
   const response = await client.chat.completions.create({
     model: "gemini-2.0-flash",
     messages,
-    temperature: 0.3,
+    temperature: 0.7,
   });
   return response;
 }

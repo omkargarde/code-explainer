@@ -36,7 +36,7 @@ export const uploadFilesFn = createServerFn({ method: "POST" })
     const file = parsedResult.data;
 
     // Directory where markdown files are saved
-    const MARKDOWN_DIR = path.join(process.cwd(), DATA_DIRECTORY);
+    const MARKDOWN_DIR = path.join(process.cwd(), DATA_DIRECTORY.upload);
 
     // Ensure directory exists
     if (!fs.existsSync(MARKDOWN_DIR)) {
