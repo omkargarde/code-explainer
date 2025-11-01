@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import type OpenAI from "openai";
 import { fetchAIResponse } from "@/utils/llmClient";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants";
@@ -84,33 +85,92 @@ function Questions() {
     queryFn: generateQuestion,
     queryKey: ["uploadFiles"],
   });
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Keyboard navigation (← and →)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!questions) return;
+      if (e.key === "ArrowRight") {
+        setCurrentIndex((prev) =>
+          prev < questions.length - 1 ? prev + 1 : prev,
+        );
+      } else if (e.key === "ArrowLeft") {
+        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [questions]);
+
   if (isError) {
     return <h1>{error.message}</h1>;
   }
   if (isPending) {
     return <h1>Loading...</h1>;
   }
-  console.log(questions);
+  if (questions.length === 0) {
+    return <h1>No questions found.</h1>;
+  }
+
+  const currentQuestion = questions[currentIndex];
+
+  const handleNext = () => {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
+  };
 
   return (
-    <section>
-      <h1 className="text-2xl">Interview questions </h1>
-      <ul>
-        {questions.map((question) => (
-          <li key={question.id}>
-            <section className="card card-body card-border bg-accent-content mx-auto my-4 max-w-5xl shadow">
-              <header className="card-title">
-                <h2 className="">{question.topic}</h2>
-                <p>Difficulty: {question.difficulty}</p>
-              </header>
-              <div className="text-base leading-6">
-                <p>{question.question}</p>
-                <p className="pt-2">{question.expected_answer_outline}</p>
-              </div>
-            </section>
-          </li>
-        ))}
-      </ul>
+    <section className="mx-auto max-w-5xl p-4">
+      <h1 className="mb-4 text-center text-2xl font-semibold">
+        Interview questions
+      </h1>
+
+      <div className="mt-6 flex items-center justify-between">
+        <button
+          className="btn btn-outline"
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+        >
+          Previous
+        </button>
+
+        <span className="text-sm text-gray-500">
+          {currentIndex + 1} / {questions.length}
+        </span>
+
+        <button
+          className="btn btn-primary"
+          onClick={handleNext}
+          disabled={currentIndex === questions.length - 1}
+        >
+          Next
+        </button>
+      </div>
+
+      <section className="card card-body bg-accent-content my-6 rounded-2xl p-6 shadow-lg">
+        <header className="card-title flex flex-col items-start gap-0.5 pb-4">
+          <h2 className="text-xl font-bold">{currentQuestion.topic}</h2>
+          <p className="text-sm text-gray-300">
+            Difficulty: {currentQuestion.difficulty}
+          </p>
+        </header>
+        <div className="text-base leading-6">
+          <p className="font-medium">{currentQuestion.question}</p>
+          <p className="pt-2 text-gray-300">
+            {currentQuestion.expected_answer_outline}
+          </p>
+        </div>
+      </section>
     </section>
   );
 }
