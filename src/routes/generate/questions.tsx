@@ -4,6 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { QuestionsCard } from "./_components/QuestionCard";
+import { QuestionNav } from "./_components/QuestionNav";
 import type OpenAI from "openai";
 import { fetchAIResponse } from "@/utils/llmClient";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants";
@@ -134,43 +136,13 @@ function Questions() {
       <h1 className="mb-4 text-center text-2xl font-semibold">
         Interview questions
       </h1>
-
-      <div className="mt-6 flex items-center justify-between">
-        <button
-          className="btn btn-outline"
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-        >
-          Previous
-        </button>
-
-        <span className="text-sm text-gray-500">
-          {currentIndex + 1} / {questions.length}
-        </span>
-
-        <button
-          className="btn btn-primary"
-          onClick={handleNext}
-          disabled={currentIndex === questions.length - 1}
-        >
-          Next
-        </button>
-      </div>
-
-      <section className="card card-body bg-accent-content my-6 rounded-2xl p-6 shadow-lg">
-        <header className="card-title flex flex-col items-start gap-0.5 pb-4">
-          <h2 className="text-xl font-bold">{currentQuestion.topic}</h2>
-          <p className="text-sm text-gray-300">
-            Difficulty: {currentQuestion.difficulty}
-          </p>
-        </header>
-        <div className="text-base leading-6">
-          <p className="font-medium">{currentQuestion.question}</p>
-          <p className="pt-2 text-gray-300">
-            {currentQuestion.expected_answer_outline}
-          </p>
-        </div>
-      </section>
+      <QuestionNav
+        currentIndex={currentIndex}
+        handleNext={handleNext}
+        handlePrev={handlePrev}
+        length={questions.length}
+      />
+      <QuestionsCard question={currentQuestion} />
     </section>
   );
 }
