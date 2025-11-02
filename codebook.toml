@@ -1,6 +1,10 @@
 words = [
+    "cwd",
+    "gfm",
     "llm",
     "lucide",
+    "mkdir",
     "openai",
+    "prefersdark",
     "zod",
 ]

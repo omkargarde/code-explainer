@@ -1,3 +1,3 @@
-export default function ErrorComponent({ error }: { error: string }) {
-  return <section>Error: {error}</section>
+export default function ErrorMessage({ error }: { error: string }) {
+  return <section>Error: {error}</section>;
 }
