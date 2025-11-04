@@ -3,8 +3,8 @@
 ## add ability to
 
 - [x] read files from file system
-- [ ] generate questions
-- [ ] create flash cards which asks random questions
+- [x] generate questions
+- [x] create flash cards which asks random questions
 - [ ] answer should only be given in audio format
 - [ ] critique on the answers given
 - [ ] transcribe audio into text

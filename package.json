@@ -31,6 +31,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
+    "react-speech-recognition": "^4.0.1",
     "remark-gfm": "^4.0.1",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^4.1.12"
@@ -44,6 +45,7 @@
     "@types/node": "^22.18.13",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "@types/react-speech-recognition": "^3.9.6",
     "@vitejs/plugin-react": "^5.1.0",
     "daisyui": "^5.3.10",
     "drizzle-kit": "^0.31.6",
