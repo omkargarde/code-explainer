@@ -6,6 +6,7 @@ import type OpenAI from "openai";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
 import { checkFileExists } from "@/utils/checkFileExists.ts";
 import { fetchAIResponse } from "@/utils/llmClient.ts";
+import { delay } from "@/utils/delay";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
@@ -52,11 +53,14 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     if (!content) {
       throw new Error("failed to generate questions");
     }
-
+    await fs.writeFile(filePath, "");
     const cleanedContent = content
       .replace(/^```[a-z]*\s*/i, "") // Remove ```language from start
       .replace(/\s*```$/, "") // Remove ``` from end
       .trim();
+
+    await delay(1);
+
     console.log("cleanedContent", cleanedContent);
     const returnPayload = JSON.parse(
       cleanedContent,

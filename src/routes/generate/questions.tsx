@@ -2,9 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { QuestionsCard } from "@/routes/generate/-components/_QuestionCard";
-import { QuestionNav } from "@/routes/generate/-components/_QuestionNav";
+import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
+import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
 import { generateQuestionFn } from "@/routes/generate/-components/generateQuestionFn.ts";
+import Loading from "@/components/Loading.tsx";
+import AudioRecorder from "@/components/AudioRecorder";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
@@ -54,7 +56,7 @@ function Questions() {
     return <h1>{error.message}</h1>;
   }
   if (isPending) {
-    return <h1>Loading...</h1>;
+    return <Loading />;
   }
   if (questions.length === 0) {
     return <h1>No questions found.</h1>;
@@ -86,6 +88,7 @@ function Questions() {
         length={questions.length}
       />
       <QuestionsCard question={currentQuestion} />
+      <AudioRecorder />
     </section>
   );
 }
