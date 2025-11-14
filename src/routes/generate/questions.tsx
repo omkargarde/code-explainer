@@ -6,13 +6,13 @@ import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
 import { generateQuestionFn } from "@/routes/generate/-components/generateQuestionFn.ts";
 import Loading from "@/components/Loading.tsx";
-import AudioRecorder from "@/components/AudioRecorder";
+import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
 });
 
-export interface QuestionsInterface {
+export interface IQuestion {
   id: number;
   topic: string;
   difficulty: string;
@@ -88,7 +88,7 @@ function Questions() {
         length={questions.length}
       />
       <QuestionsCard question={currentQuestion} />
-      <AudioRecorder />
+      <AudioRecorder questions={currentQuestion} />
     </section>
   );
 }

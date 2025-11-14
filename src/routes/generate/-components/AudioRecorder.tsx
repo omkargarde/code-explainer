@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
+import type { IQuestion } from "../questions";
 
-function AudioRecorder() {
+function AudioRecorder(props: { questions: IQuestion }) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);

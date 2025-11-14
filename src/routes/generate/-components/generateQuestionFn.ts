@@ -1,7 +1,8 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { createServerFn } from "@tanstack/react-start";
-import type { QuestionsInterface } from "@/routes/generate/questions.tsx";
+import z from "zod";
+import type { IQuestion } from "@/routes/generate/questions.tsx";
 import type OpenAI from "openai";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
 import { checkFileExists } from "@/utils/checkFileExists.ts";
@@ -38,7 +39,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
 
     const file_content = await fs.readFile(filePath, "utf-8");
     if (file_content.trim() !== "" && fileIsTenMinutesOld) {
-      return JSON.parse(file_content) as Array<QuestionsInterface>;
+      return JSON.parse(file_content) as Array<IQuestion>;
     }
     const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
       [
@@ -62,11 +63,59 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     await delay(1);
 
     console.log("cleanedContent", cleanedContent);
-    const returnPayload = JSON.parse(
-      cleanedContent,
-    ) as Array<QuestionsInterface>;
+    const returnPayload = JSON.parse(cleanedContent) as Array<IQuestion>;
 
     await fs.writeFile(filePath, JSON.stringify(returnPayload));
     return returnPayload;
   },
 );
+
+const audioFormDataSchema = z.instanceof(FormData).refine(
+  (formData) => {
+    const file = formData.get("audio");
+    if (!file) return false;
+    if (!(file instanceof File)) return false;
+    return file.type.startsWith("audio/");
+  },
+  {
+    message: "FormData must contain a valid audio file under the 'audio' field",
+  },
+);
+
+const isFormDataSchema = z.instanceof(FormData);
+
+export const generateFeedbackFn = createServerFn({ method: "GET" })
+  .inputValidator(isFormDataSchema)
+  .handler(({ data }) => {
+    // parse the input for audio
+    const parsedResult = audioFormDataSchema.safeParse(data);
+
+    if (!parsedResult.success) {
+      const errorMsg = parsedResult.error.issues
+        .map((i) => i.message)
+        .join(", ");
+      throw new Error(`Invalid upload: ${errorMsg}`);
+    }
+
+    const audioFile = parsedResult.data;
+
+    // get AI feedback by sending audio, the question and the answer outline
+    const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
+      [
+        {
+          role: "system",
+          content: ``,
+        },
+        {
+          role: "user",
+          content: ``,
+        },
+      ];
+
+    const response = await fetchAIResponse(messages);
+
+    const explanation = response.choices[0]?.message;
+    // check for error
+    // convert markdown to json
+    // return response
+  });

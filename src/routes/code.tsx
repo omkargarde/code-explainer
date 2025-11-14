@@ -9,7 +9,6 @@ import remarkGfm from "remark-gfm";
 import type OpenAI from "openai";
 import type { ReactNode } from "react";
 import { LanguagesList } from "@/constants/constants";
-import { environmentVariables } from "@/Env";
 import { fetchAIResponse } from "@/utils/llmClient";
 
 export const Route = createFileRoute("/code")({
@@ -27,7 +26,7 @@ export const callAi = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { code, language } = data;
     console.log("data received is ", data);
-    
+
     const messages: Array<OpenAI.Chat.Completions.ChatCompletionMessageParam> =
       [
         {
