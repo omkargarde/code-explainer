@@ -6,10 +6,9 @@ import { useMutation } from "@tanstack/react-query";
 import z from "zod";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type OpenAI from "openai";
 import type { ReactNode } from "react";
 import { LanguagesList } from "@/constants/constants";
-import { fetchAIResponse } from "@/utils/llmClient";
+import { fetchAIResponse } from "@/utils/AiFunctions";
 
 export const Route = createFileRoute("/code")({
   component: Code,
@@ -46,7 +45,7 @@ export const callAi = createServerFn({ method: "POST" })
     console.log("explanation generated is ", explanation);
 
     // typescript is not type narrowing correctly
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
     if (!explanation) {
       const errorMessage = "Failed to generate explanation.";
       console.log(errorMessage);

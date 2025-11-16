@@ -1,7 +1,7 @@
 import { createEnv } from '@t3-oss/env-core'
 import { z } from 'zod'
 
-export const environmentVariables = createEnv({
+export const ENV = createEnv({
   server: {
     SERVER_URL: z.url().optional(),
     // gemini

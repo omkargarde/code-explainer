@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { IQuestion } from "../questions";
+import { AUDIO_TYPE } from "@/constants/constants";
 
 function AudioRecorder(props: { questions: IQuestion }) {
   const [isRecording, setIsRecording] = useState(false);
@@ -25,7 +26,7 @@ function AudioRecorder(props: { questions: IQuestion }) {
       // When recording stops, create a Blob
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/webm",
+          type: AUDIO_TYPE.webm,
         });
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
