@@ -74,7 +74,7 @@ const audioFormDataSchema = z.object({
 
 const isFormDataSchema = z.instanceof(FormData);
 
-export const generateFeedbackFn = createServerFn({ method: "POST" })
+export const generateFeedbackFn = createServerFn({ method: "GET" })
   .inputValidator(isFormDataSchema)
   .handler(async ({ data }) => {
     // parse the input for audio

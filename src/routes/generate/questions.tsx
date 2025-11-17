@@ -4,9 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
-import { generateQuestionFn } from "@/routes/generate/-components/generateQuestionFn.ts";
+import {
+  generateFeedbackFn,
+  generateQuestionFn,
+} from "@/routes/generate/-components/generateQuestionFn.ts";
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
+import { QUERY_KEYS } from "@/constants/constants";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
@@ -22,7 +26,7 @@ export interface IQuestion {
 
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
-
+  const generateFeedback = useServerFn(generateFeedbackFn);
   const {
     isPending,
     isError,
@@ -30,7 +34,20 @@ function Questions() {
     error,
   } = useQuery({
     queryFn: generateQuestion,
-    queryKey: ["uploadFiles"],
+    queryKey: [QUERY_KEYS.upload_files],
+  });
+
+  const {
+    isPending: feedbackPending,
+    isError: feedbackErrored,
+    data: feedbackData,
+    error: feedbackError,
+    refetch: feedbackRefetch,
+  } = useQuery({
+    queryFn: async (dataForFeedbackGeneration: FormData) =>
+      generateFeedback({ data: dataForFeedbackGeneration }),
+    queryKey: [QUERY_KEYS.generate_feedback],
+    enabled: false,
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
