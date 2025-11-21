@@ -48,7 +48,8 @@ export const PROMPTS = {
         "expected_answer_outline": string
       },
     ]
-    `,
+    response should only contain a JSON object response, do not added any greeting or anything else`,
+
   feedback_for_answer_uploaded: (question: string) =>
     `Your are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , your are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer give in the audio`,
 } as const;
@@ -57,6 +58,6 @@ export const MODELS = {
   flash_lite_preview: "gemini-2.5-flash-preview-09-2025",
 } as const;
 
-export const AUDIO_TYPE = {
-  webm: "audio/webm",
+export const AUDIO_FORMAT_CONFIG = {
+  webm: { type: "audio/webm", extension: ".webm" },
 } as const;

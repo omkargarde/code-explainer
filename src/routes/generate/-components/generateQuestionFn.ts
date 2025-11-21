@@ -20,28 +20,32 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     );
 
     // Ensure directory exists
+    // Ensure directory exists
     const directoryExists = await checkFileExists(RESPONSE_DIR);
-    if (directoryExists) {
+    if (!directoryExists) {
       await fs.mkdir(RESPONSE_DIR, { recursive: true });
     }
 
     // Ensure File exists
     const filePath = path.join(RESPONSE_DIR, "questions.md");
     const fileExists = await checkFileExists(filePath);
+
     if (fileExists) {
-      await fs.writeFile(filePath, "");
-    }
+      // check if file is older than 10 minutes
+      const fileMetaData = await fs.stat(filePath);
 
-    // check if file is older than 10 minutes
-    const fileMetaData = await fs.stat(filePath);
-    const lastModified = fileMetaData.birthtimeMs;
-    const currentTime = Date.now();
-    const tenMinutes = 10 * 60 * 1000;
-    const fileIsTenMinutesOld = tenMinutes > currentTime - lastModified;
+      const lastModified = fileMetaData.mtime.getTime();
+      const currentTime = Date.now();
+      const tenMinutes = 10 * 60 * 1000;
 
-    const file_content = await fs.readFile(filePath, "utf-8");
-    if (file_content.trim() !== "" && fileIsTenMinutesOld) {
-      return JSON.parse(file_content) as Array<IQuestion>;
+      const fileIsFresh = currentTime - lastModified < tenMinutes;
+
+      if (fileIsFresh) {
+        const file_content = await fs.readFile(filePath, "utf-8");
+        if (file_content.trim() !== "") {
+          return JSON.parse(file_content) as Array<IQuestion>;
+        }
+      }
     }
 
     const response = await fetchAIResponse(
@@ -74,11 +78,12 @@ const audioFormDataSchema = z.object({
 
 const isFormDataSchema = z.instanceof(FormData);
 
-export const generateFeedbackFn = createServerFn({ method: "GET" })
+export const generateFeedbackFn = createServerFn({ method: "POST" })
   .inputValidator(isFormDataSchema)
   .handler(async ({ data }) => {
     // parse the input for audio
     try {
+      console.log("generateFeedbackFn is called");
       // We need to cast `data` to `FormData` because `isFormDataSchema` only
       // asserts that it is a `FormData` instance, but TypeScript doesn't
       // automatically infer the type for the handler's `data` parameter.
@@ -97,6 +102,7 @@ export const generateFeedbackFn = createServerFn({ method: "GET" })
       // get AI feedback by sending audio, the question and the answer outline
       const message = PROMPTS.feedback_for_answer_uploaded(question);
 
+      console.log("generating response");
       const response = await fetchAIResponseUsingAudioInput({
         audio,
         message,
@@ -110,9 +116,11 @@ export const generateFeedbackFn = createServerFn({ method: "GET" })
       return { feedback: response };
     } catch (error) {
       if (error instanceof Error) {
+        console.error("error", error.message);
         return { error: error.message };
       } else {
         // Returning a generic error message as per the previous structure.
+        console.error("error", error);
         return { error: "An unexpected error occurred." };
       }
     }

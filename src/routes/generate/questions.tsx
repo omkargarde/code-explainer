@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
@@ -30,11 +30,13 @@ function Questions() {
   const {
     isPending,
     isError,
-    data: questions,
+    data: generatedQuestionsData,
     error,
+    refetch: generateQuestionsFn,
   } = useQuery({
     queryFn: generateQuestion,
     queryKey: [QUERY_KEYS.upload_files],
+    enabled: false,
   });
 
   const {
@@ -42,23 +44,21 @@ function Questions() {
     isError: feedbackErrored,
     data: feedbackData,
     error: feedbackError,
-    refetch: feedbackRefetch,
-  } = useQuery({
-    queryFn: async (dataForFeedbackGeneration: FormData) =>
+    mutate: feedbackMutation,
+  } = useMutation({
+    mutationFn: (dataForFeedbackGeneration: FormData) =>
       generateFeedback({ data: dataForFeedbackGeneration }),
-    queryKey: [QUERY_KEYS.generate_feedback],
-    enabled: false,
+    mutationKey: [QUERY_KEYS.generate_feedback],
   });
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Keyboard navigation (← and →)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!questions) return;
+      if (!generatedQuestionsData) return;
       if (e.key === "ArrowRight") {
         setCurrentIndex((prev) =>
-          prev < questions.length - 1 ? prev + 1 : prev,
+          prev < generatedQuestionsData.length - 1 ? prev + 1 : prev,
         );
       } else if (e.key === "ArrowLeft") {
         setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -67,7 +67,11 @@ function Questions() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [questions]);
+  }, [generatedQuestionsData]);
+
+  useEffect(() => {
+    generateQuestionFn();
+  }, []);
 
   if (isError) {
     return <h1>{error.message}</h1>;
@@ -75,14 +79,14 @@ function Questions() {
   if (isPending) {
     return <Loading />;
   }
-  if (questions.length === 0) {
+  if (!generatedQuestionsData || generatedQuestionsData.length === 0) {
     return <h1>No questions found.</h1>;
   }
 
-  const currentQuestion = questions[currentIndex];
+  const currentQuestion = generatedQuestionsData[currentIndex];
 
   const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
+    if (currentIndex < generatedQuestionsData.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
   };
@@ -98,14 +102,57 @@ function Questions() {
       <h1 className="mb-4 text-center text-2xl font-semibold">
         Interview questions
       </h1>
+      <button
+        className="btn btn-primary btn-block py-6 text-2xl"
+        onClick={() => generateQuestionsFn()}
+      >
+        Generate questions
+      </button>
       <QuestionNav
         currentIndex={currentIndex}
         handleNext={handleNext}
         handlePrev={handlePrev}
-        length={questions.length}
+        length={generatedQuestionsData.length}
       />
       <QuestionsCard question={currentQuestion} />
-      <AudioRecorder questions={currentQuestion} />
+      <AudioRecorder
+        questions={currentQuestion}
+        feedbackMutation={feedbackMutation}
+      />
+      <DisplayFeedback
+        feedbackData={feedbackData}
+        feedbackError={feedbackError}
+        feedbackErrored={feedbackErrored}
+        feedbackPending={feedbackPending}
+      />
     </section>
   );
+}
+
+function DisplayFeedback(props: {
+  feedbackPending: boolean;
+  feedbackErrored: boolean;
+  feedbackError: Error | null;
+  feedbackData:
+    | {
+        feedback: string;
+        error?: undefined;
+      }
+    | {
+        error: string;
+        feedback?: undefined;
+      }
+    | undefined;
+}) {
+  if (props.feedbackErrored) {
+    if (!props.feedbackError) return <h1>something went wrong</h1>;
+    return <h1>{props.feedbackError.message}</h1>;
+  }
+  if (props.feedbackPending) {
+    return <Loading />;
+  }
+  if (!props.feedbackData) {
+    return <h1>No data found</h1>;
+  }
+  return <div>{props.feedbackData.feedback}</div>;
 }

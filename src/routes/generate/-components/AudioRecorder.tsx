@@ -1,8 +1,11 @@
 import { useRef, useState } from "react";
 import type { IQuestion } from "../questions";
-import { AUDIO_TYPE } from "@/constants/constants";
+import { AUDIO_FORMAT_CONFIG } from "@/constants/constants";
 
-function AudioRecorder(props: { questions: IQuestion }) {
+function AudioRecorder(props: {
+  questions: IQuestion;
+  feedbackMutation: (data: FormData) => void;
+}) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -26,8 +29,18 @@ function AudioRecorder(props: { questions: IQuestion }) {
       // When recording stops, create a Blob
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: AUDIO_TYPE.webm,
+          type: AUDIO_FORMAT_CONFIG.webm.type,
         });
+
+        const formDataToUpload = new FormData();
+
+        const filename = `audio_recording${AUDIO_FORMAT_CONFIG.webm.extension}`;
+        formDataToUpload.append("audio", audioBlob, filename);
+
+        formDataToUpload.append("question", props.questions.question);
+
+        props.feedbackMutation(formDataToUpload);
+
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
       };
