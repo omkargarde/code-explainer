@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
 import {
@@ -36,7 +38,6 @@ function Questions() {
   } = useQuery({
     queryFn: generateQuestion,
     queryKey: [QUERY_KEYS.upload_files],
-    enabled: false,
   });
 
   const {
@@ -68,10 +69,6 @@ function Questions() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [generatedQuestionsData]);
-
-  useEffect(() => {
-    generateQuestionFn();
-  }, []);
 
   if (isError) {
     return <h1>{error.message}</h1>;
@@ -154,5 +151,10 @@ function DisplayFeedback(props: {
   if (!props.feedbackData) {
     return <h1>No data found</h1>;
   }
-  return <div>{props.feedbackData.feedback}</div>;
+  // return <div>{props.feedbackData.feedback}</div>;
+  return (
+    <Markdown remarkPlugins={[remarkGfm]}>
+      {props.feedbackData.feedback}
+    </Markdown>
+  );
 }

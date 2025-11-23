@@ -43,6 +43,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       if (fileIsFresh) {
         const file_content = await fs.readFile(filePath, "utf-8");
         if (file_content.trim() !== "") {
+          console.log("file is fresh"); 
           return JSON.parse(file_content) as Array<IQuestion>;
         }
       }
@@ -88,7 +89,12 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
       // asserts that it is a `FormData` instance, but TypeScript doesn't
       // automatically infer the type for the handler's `data` parameter.
       const formData = data as unknown as FormData;
-      const parsedResult = audioFormDataSchema.safeParse(formData);
+      const rawAudio = formData.get("audio");
+      const rawQuestion = formData.get("question");
+      const parsedResult = audioFormDataSchema.safeParse({
+        audio: rawAudio,
+        question: rawQuestion,
+      });
 
       if (!parsedResult.success) {
         const errorMsg = parsedResult.error.issues
