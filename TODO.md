@@ -9,9 +9,8 @@
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
 - [ ] add a scrappy and minimal landing for project
-- [ ] get the free domain and add it to
-      cloudflare, netlify or cloudflare, needs some research
-- [ ] add database to backend , using files in blowing up complexity
+- [ ] RAG using the previous asked question
+- [ ] add database to backend , using files is blowing up complexity
 - [ ] separate generateQuestionsFn into GET call for
       fetching previously generated question and POST call to generate new questions
 - [ ] add a rich text editor for addition of questions
@@ -20,6 +19,8 @@
 - [ ] for auto tagging of questions, figure out a way to use local LLM
 - [ ] add questions with code challenges
 - [ ] code challenges should be answered with both code and audio explanation
+- [ ] get the free domain and add it to
+      cloudflare, netlify or cloudflare, needs some research
 - [ ] add resume
 - [ ] add feedback
 - [ ] focus on particular topic
