@@ -8,6 +8,7 @@
 - [x] answer should only be given in audio format
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
+- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
 - [ ] add database to backend , using files is blowing up complexity

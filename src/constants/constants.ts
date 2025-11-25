@@ -51,7 +51,7 @@ export const PROMPTS = {
     response should only contain a JSON object response, do not added any greeting or anything else`,
 
   feedback_for_answer_uploaded: (question: string) =>
-    `Your are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , your are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer give in the audio`,
+    `You are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , you are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer given in the audio`,
 } as const;
 
 export const MODELS = {

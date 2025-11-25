@@ -76,8 +76,12 @@ function Questions() {
   if (isPending) {
     return <Loading />;
   }
-  if (!generatedQuestionsData || generatedQuestionsData.length === 0) {
-    return <h1>No questions found.</h1>;
+  if (generatedQuestionsData.length === 0) {
+    return (
+      <div className="mt-4 text-gray-500">
+        Record your answer above to receive AI feedback
+      </div>
+    );
   }
 
   const currentQuestion = generatedQuestionsData[currentIndex];
@@ -113,7 +117,7 @@ function Questions() {
       />
       <QuestionsCard question={currentQuestion} />
       <AudioRecorder
-        questions={currentQuestion}
+        question={currentQuestion}
         feedbackMutation={feedbackMutation}
       />
       <DisplayFeedback
@@ -141,20 +145,31 @@ function DisplayFeedback(props: {
       }
     | undefined;
 }) {
+  if (!props.feedbackData) {
+    return <h1>No data found</h1>;
+  }
   if (props.feedbackErrored) {
     if (!props.feedbackError) return <h1>something went wrong</h1>;
     return <h1>{props.feedbackError.message}</h1>;
   }
+  if (props.feedbackData.error) {
+    return (
+      <div className="rounded bg-red-100 p-4 text-red-700">
+        <h2 className="font-semibold">Error generating feedback:</h2>
+        <p>{props.feedbackData.error}</p>
+      </div>
+    );
+  }
   if (props.feedbackPending) {
     return <Loading />;
   }
-  if (!props.feedbackData) {
-    return <h1>No data found</h1>;
-  }
   // return <div>{props.feedbackData.feedback}</div>;
   return (
-    <Markdown remarkPlugins={[remarkGfm]}>
-      {props.feedbackData.feedback}
-    </Markdown>
+    <div className="prose mt-4 max-w-none">
+      <h2 className="font-semibold">AI Feedback:</h2>{" "}
+      <Markdown remarkPlugins={[remarkGfm]}>
+        {props.feedbackData.feedback}
+      </Markdown>
+    </div>
   );
 }

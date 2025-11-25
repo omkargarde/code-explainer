@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
-import User from './User'
+import { Link } from "@tanstack/react-router";
+import User from "./User";
 
 export default function Navbar() {
   return (
@@ -7,7 +7,7 @@ export default function Navbar() {
       <ul className="flex items-center justify-between">
         <li>
           <h1 className="text-2xl font-bold">
-            <Link to="/">Code Explainer</Link>
+            <Link to="/">Mock interview</Link>
           </h1>
         </li>
         <li>
@@ -18,5 +18,5 @@ export default function Navbar() {
         </li>
       </ul>
     </nav>
-  )
+  );
 }

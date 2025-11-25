@@ -48,7 +48,10 @@ export async function fetchAIResponseUsingAudioInput({
     console.log(response.text);
     return response.text;
   } catch (error) {
-    if (error instanceof Error) return Error("something went wrong");
-    else return Error("something went wrong");
+    console.error("Error in fetchAIResponseUsingAudioInput:", error);
+    if (error instanceof Error) return error;
+    return new Error(
+      "An unknown error occurred while fetching AI response with audio.",
+    );
   }
 }

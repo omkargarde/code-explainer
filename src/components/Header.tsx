@@ -19,7 +19,7 @@ export default function Header() {
             <Menu size={24} />
           </button>
           <h1 className="ml-4 text-2xl font-semibold">
-            <Link to="/">Code Explainer</Link>
+            <Link to="/">Mock interviewer</Link>
           </h1>
         </div>
         <User />
@@ -42,7 +42,8 @@ export default function Header() {
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4">
-          <Link
+          {/* TODO: remove or complete the route*/}
+          {/* <Link
             to="/code"
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
@@ -52,7 +53,7 @@ export default function Header() {
             }}
           >
             <span className="font-medium">Code</span>
-          </Link>
+          </Link>*/}
           <Link
             to="/upload"
             onClick={() => setIsOpen(false)}

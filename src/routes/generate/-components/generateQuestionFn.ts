@@ -43,7 +43,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       if (fileIsFresh) {
         const file_content = await fs.readFile(filePath, "utf-8");
         if (file_content.trim() !== "") {
-          console.log("file is fresh"); 
+          console.log("file is fresh");
           return JSON.parse(file_content) as Array<IQuestion>;
         }
       }
@@ -62,6 +62,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       .replace(/\s*```$/, "") // Remove ``` from end
       .trim();
 
+    // required for content generation to complete safely
     await delay(1);
 
     console.log("cleanedContent", cleanedContent);
@@ -121,13 +122,11 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
       // expected return type, which can include an `error` property.
       return { feedback: response };
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("error", error.message);
-        return { error: error.message };
-      } else {
-        // Returning a generic error message as per the previous structure.
-        console.error("error", error);
-        return { error: "An unexpected error occurred." };
-      }
+      const message =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.";
+      console.error("error", message);
+      return { error: message };
     }
   });

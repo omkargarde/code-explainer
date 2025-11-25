@@ -1,18 +1,34 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { IQuestion } from "../questions";
 import { AUDIO_FORMAT_CONFIG } from "@/constants/constants";
+import ErrorMessage from "@/components/Error";
 
 function AudioRecorder(props: {
-  questions: IQuestion;
+  question: IQuestion;
   feedbackMutation: (data: FormData) => void;
 }) {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Array<Blob>>([]);
+  const [permissionIsDenied, setPermissionIsDenied] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (audioURL) {
+        URL.revokeObjectURL(audioURL);
+      }
+    };
+  }, [audioURL]);
 
   const startRecording = async () => {
     try {
+      // Clean up any previous recording
+      if (audioURL) {
+        URL.revokeObjectURL(audioURL);
+        setAudioURL(null);
+      }
+
       // Ask for microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -28,6 +44,9 @@ function AudioRecorder(props: {
 
       // When recording stops, create a Blob
       mediaRecorder.onstop = () => {
+        // Stop all tracks to release the microphone
+        stream.getTracks().forEach((track) => track.stop());
+
         const audioBlob = new Blob(audioChunksRef.current, {
           type: AUDIO_FORMAT_CONFIG.webm.type,
         });
@@ -37,7 +56,7 @@ function AudioRecorder(props: {
         const filename = `audio_recording${AUDIO_FORMAT_CONFIG.webm.extension}`;
         formDataToUpload.append("audio", audioBlob, filename);
 
-        formDataToUpload.append("question", props.questions.question);
+        formDataToUpload.append("question", props.question.question);
 
         props.feedbackMutation(formDataToUpload);
 
@@ -49,6 +68,7 @@ function AudioRecorder(props: {
       mediaRecorder.start();
       setIsRecording(true);
     } catch (err) {
+      setPermissionIsDenied(true);
       console.error("Microphone access denied or error:", err);
     }
   };
@@ -63,6 +83,9 @@ function AudioRecorder(props: {
   return (
     <div className="flex flex-col items-center space-y-3 p-4">
       <h2 className="text-lg font-semibold">🎤 Audio Recorder</h2>
+      {permissionIsDenied && (
+        <ErrorMessage error="permission for microphone is required, please start recording again and allow microphone access" />
+      )}
       <div className="space-x-2">
         {!isRecording ? (
           <button
