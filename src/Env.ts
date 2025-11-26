@@ -32,15 +32,15 @@ export const ENV = createEnv({
   // runtimeEnv: import.meta.env,
   runtimeEnv: {
     // gemini
-    GOOGLE_GENERATIVE_AI_API_KEY: import.meta.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     // better auth
-    BETTER_AUTH_SECRET: import.meta.env.BETTER_AUTH_SECRET,
-    BETTER_AUTH_URL: import.meta.env.BETTER_AUTH_URL,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     // neon db
-    DATABASE_URL: import.meta.env.DATABASE_URL,
+    DATABASE_URL: process.env.DATABASE_URL,
     // github oauth
-    GITHUB_CLIENT_ID: import.meta.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: import.meta.env.GITHUB_CLIENT_SECRET,
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
   },
 
   /**
