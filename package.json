@@ -27,6 +27,7 @@
     "better-auth": "^1.4.1",
     "drizzle-orm": "^0.44.7",
     "lucide-react": "^0.544.0",
+    "nitro": "^3.0.1-alpha.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
@@ -50,7 +51,6 @@
     "drizzle-kit": "^0.31.7",
     "eslint-plugin-oxlint": "^1.29.0",
     "jsdom": "^27.2.0",
-    "netlify": "^23.11.1",
     "oxlint": "^1.29.0",
     "oxlint-tsgolint": "^0.7.3",
     "prettier": "^3.6.2",
@@ -61,8 +61,5 @@
     "vite": "^7.2.4",
     "vitest": "^3.2.4",
     "web-vitals": "^5.1.0"
-  },
-  "trustedDependencies": [
-    "netlify"
-  ]
+  }
 }
