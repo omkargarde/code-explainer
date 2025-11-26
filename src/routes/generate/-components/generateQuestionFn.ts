@@ -4,7 +4,7 @@ import z from "zod";
 import { createServerFn } from "@tanstack/react-start";
 import type { IQuestion } from "@/routes/generate/questions.tsx";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
-import { checkFileExists } from "@/utils/checkFileExists.ts";
+import { checkFileExists } from "@/utils/server-only-utils/checkFileExists";
 import {
   fetchAIResponse,
   fetchAIResponseUsingAudioInput,
