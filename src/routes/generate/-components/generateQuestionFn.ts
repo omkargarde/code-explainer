@@ -19,7 +19,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       process.cwd(),
       DATA_DIRECTORY.existing_response,
     );
-
+    
     // Ensure directory exists
     // Ensure directory exists
     const directoryExists = await checkFileExists(RESPONSE_DIR);
