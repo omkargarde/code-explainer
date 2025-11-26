@@ -1,6 +1,6 @@
-import type { QuestionsInterface } from "../questions";
+import type { IQuestion } from "../questions";
 
-export function QuestionsCard({ question }: { question: QuestionsInterface }) {
+export function QuestionsCard({ question }: { question: IQuestion }) {
   return (
     <section className="card card-body bg-accent-content my-6 rounded-2xl p-6 shadow-lg">
       <header className="card-title flex flex-col items-start gap-0.5 pb-4">

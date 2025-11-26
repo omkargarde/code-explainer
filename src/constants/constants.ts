@@ -26,6 +26,11 @@ export const LanguagesList = [
   "CSS",
 ] as const;
 
+export const QUERY_KEYS = {
+  upload_files: "upload",
+  generate_feedback: "generateFeedback",
+};
+
 export const DATA_DIRECTORY = {
   upload: "src/data/uploads",
   existing_response: "src/data/generated",
@@ -36,13 +41,23 @@ export const PROMPTS = {
     Each question should be a JSON object containing the following fields:
    	[
       {
-        "id": 1,
-        "topic": "JavaScript",
-        "difficulty": "Beginner",
-        "question": "Explain the difference between let, const, and var.",
-        "expected_answer_outline": "Discuss scope, mutability, and hoisting differences."
+        "id": Number,
+        "topic": string,
+        "difficulty": string,
+        "question": string,
+        "expected_answer_outline": string
       },
-      ...
     ]
-    `,
+    response should only contain a JSON object response, do not added any greeting or anything else`,
+
+  feedback_for_answer_uploaded: (question: string) =>
+    `You are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , you are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer given in the audio`,
+} as const;
+
+export const MODELS = {
+  flash_lite_preview: "gemini-2.5-flash-preview-09-2025",
+} as const;
+
+export const AUDIO_FORMAT_CONFIG = {
+  webm: { type: "audio/webm", extension: ".webm" },
 } as const;
