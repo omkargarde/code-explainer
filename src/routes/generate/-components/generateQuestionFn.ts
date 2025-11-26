@@ -5,11 +5,12 @@ import { createServerFn } from "@tanstack/react-start";
 import type { IQuestion } from "@/routes/generate/questions.tsx";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
 import { checkFileExists } from "@/utils/server-only-utils/checkFileExists";
+
+import { delay } from "@/utils/delay";
 import {
   fetchAIResponse,
   fetchAIResponseUsingAudioInput,
-} from "@/utils/AiFunctions";
-import { delay } from "@/utils/delay";
+} from "@/utils/server-only-utils/AiFunctions";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {

@@ -10,9 +10,9 @@ export default function Navbar() {
             <Link to="/">Mock interview</Link>
           </h1>
         </li>
-        <li>
+        {/* <li>
           <Link to="/code">Code entry</Link>
-        </li>
+        </li>*/}
         <li>
           <User />
         </li>
