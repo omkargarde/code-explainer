@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -13,9 +13,22 @@ import {
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
+import { getUserId } from "@/lib/auth-server-func";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
+  beforeLoad: async () => {
+    const userId = await getUserId();
+    return { userId };
+  },
+  loader: ({ context }) => {
+    if (!context.userId) {
+      throw redirect({
+        to: "/",
+      });
+    }
+    return { userId: context.userId };
+  },
 });
 
 export interface IQuestion {
@@ -29,6 +42,7 @@ export interface IQuestion {
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
   const generateFeedback = useServerFn(generateFeedbackFn);
+  const { userId } = Route.useLoaderData();
   const {
     isPending,
     isError,
@@ -101,7 +115,7 @@ function Questions() {
   return (
     <section className="mx-auto max-w-5xl p-4">
       <h1 className="mb-4 text-center text-2xl font-semibold">
-        Interview questions
+        Interview questions {userId}
       </h1>
       <button
         className="btn btn-primary btn-block py-6 text-2xl"
