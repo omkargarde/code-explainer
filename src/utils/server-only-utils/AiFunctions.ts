@@ -3,7 +3,6 @@ import {
   createPartFromUri,
   createUserContent,
 } from "@google/genai";
-import type { IQuestion } from "@/routes/generate/questions";
 import { ENV } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
@@ -17,7 +16,7 @@ export async function fetchAIResponse(messages: string) {
     contents: messages,
     config: {
       responseMimeType: FORMAT_CONFIG.json.type,
-      responseJsonSchema: ,
+      responseJsonSchema: z,
     },
   });
 }

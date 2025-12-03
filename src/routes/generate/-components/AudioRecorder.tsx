@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { IQuestion } from "../questions";
+import type { IQuestion } from "./questions-typing";
 import { FORMAT_CONFIG } from "@/constants/constants";
 import ErrorMessage from "@/components/Error";
 

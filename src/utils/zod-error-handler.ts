@@ -1,26 +1,6 @@
 import type z from "zod";
 
-export function handleZodError(error: z.ZodError) {
-  const fieldErrors = error.issues.reduce(
-    (acc, issue) => {
-      const field = issue.path.join(".");
-      acc[field] = issue.message;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
-
-  const message = error.issues.map((i) => i.message).join(", ");
-
-  return {
-    error: "Validation failed",
-    message,
-    fieldErrors,
-    issues: error.issues,
-  };
-}
-
-export function formatZodError(error: z.ZodError): string {
+function formatZodError(error: z.ZodError): string {
   return error.issues
     .map((issue) => {
       const path = issue.path.join(".");
@@ -44,15 +24,22 @@ export function createZodErrorResponse(error: z.ZodError) {
             acc[field] = issue.message;
             return acc;
           },
-          {} as Record<string, string>,
+          {} as { [x: string]: string },
         ),
         issues: error.issues.map((issue) => ({
           code: issue.code,
-          expected: "expected" in issue ? issue.expected : undefined,
-          received: "received" in issue ? issue.received : undefined,
+          expected:
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            "expected" in issue && issue.expected !== undefined
+              ? issue.expected
+              : null,
+          received:
+            "received" in issue && issue.received !== undefined
+              ? issue.received
+              : null,
           path: issue.path,
           message: issue.message,
-          input: issue.input,
+          input: issue.input ?? {},
         })),
       },
     },
