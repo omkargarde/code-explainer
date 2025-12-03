@@ -3,8 +3,9 @@ import {
   createPartFromUri,
   createUserContent,
 } from "@google/genai";
+import type { IQuestion } from "@/routes/generate/questions";
 import { ENV } from "@/Env";
-import { MODELS } from "@/constants/constants";
+import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
 const ai = new GoogleGenAI({
   apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -12,8 +13,12 @@ const ai = new GoogleGenAI({
 
 export async function fetchAIResponse(messages: string) {
   return await ai.models.generateContent({
-    model: MODELS.flash_lite_preview,
+    model: MODELS.gemini_3_pro_preview,
     contents: messages,
+    config: {
+      responseMimeType: FORMAT_CONFIG.json.type,
+      responseJsonSchema: ,
+    },
   });
 }
 

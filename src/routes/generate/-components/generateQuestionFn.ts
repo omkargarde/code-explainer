@@ -2,7 +2,8 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import z from "zod";
 import { createServerFn } from "@tanstack/react-start";
-import type { IQuestion } from "@/routes/generate/questions.tsx";
+import { and, eq, gt } from "drizzle-orm";
+import { QuestionSchema } from "./questions-typing";
 import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
 import { checkFileExists } from "@/utils/server-only-utils/checkFileExists";
 
@@ -11,59 +12,53 @@ import {
   fetchAIResponse,
   fetchAIResponseUsingAudioInput,
 } from "@/utils/server-only-utils/AiFunctions";
+import { getUserSession } from "@/lib/auth-server-func";
+import { db } from "@/db/database";
+import { markdownTable, userTable } from "@/db/schema";
+import { createZodErrorResponse } from "@/utils/zod-error-handler";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
-    // Directory where markdown files are saved
-    const RESPONSE_DIR = path.join(
-      process.cwd(),
-      DATA_DIRECTORY.existing_response,
-    );
-    
-    // Ensure directory exists
-    // Ensure directory exists
-    const directoryExists = await checkFileExists(RESPONSE_DIR);
-    if (!directoryExists) {
-      await fs.mkdir(RESPONSE_DIR, { recursive: true });
+    const user = await getUserSession();
+
+    if (!user.email) {
+      throw new Error("User email not found");
     }
 
-    // Ensure File exists
-    const filePath = path.join(RESPONSE_DIR, "questions.md");
-    const fileExists = await checkFileExists(filePath);
+    const twentyMinutesAgo = new Date(Date.now() - 20 * 60 * 1000);
 
-    if (fileExists) {
-      // check if file is older than 10 minutes
-      const fileMetaData = await fs.stat(filePath);
-
-      const lastModified = fileMetaData.mtime.getTime();
-      const currentTime = Date.now();
-      const tenMinutes = 10 * 60 * 1000;
-
-      const fileIsFresh = currentTime - lastModified < tenMinutes;
-
-      if (fileIsFresh) {
-        const file_content = await fs.readFile(filePath, "utf-8");
-        if (file_content.trim() !== "") {
-          console.log("file is fresh");
-          return JSON.parse(file_content) as Array<IQuestion>;
-        }
-      }
+    const response_from_db = await db
+      .select({ content: markdownTable.content })
+      .from(markdownTable)
+      .innerJoin(userTable, eq(markdownTable.userId, userTable.id))
+      .where(
+        and(
+          eq(userTable.email, user.email),
+          gt(markdownTable.updatedAt, twentyMinutesAgo),
+        ),
+      );
+    if (response_from_db.length > 0) {
+      QuestionSchema.safeParse;
+      return JSON.parse(response_from_db[0].content) as Array<IQuestion>;
     }
 
     const response = await fetchAIResponse(
       PROMPTS.question_generation_for_javascript_and_react,
     );
-    const content = response.text;
-    if (!content) {
+
+    const generatedContent = response.text;
+
+    if (!generatedContent) {
       throw new Error("failed to generate questions");
     }
-    await fs.writeFile(filePath, "");
-    const cleanedContent = content
+
+    const cleanedContent = generatedContent
       .replace(/^```[a-z]*\s*/i, "") // Remove ```language from start
       .replace(/\s*```$/, "") // Remove ``` from end
       .trim();
 
     // required for content generation to complete safely
+    // sometimes returning incomplete response without
     await delay(1);
 
     console.log("cleanedContent", cleanedContent);
@@ -99,10 +94,7 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
       });
 
       if (!parsedResult.success) {
-        const errorMsg = parsedResult.error.issues
-          .map((i) => i.message)
-          .join(", ");
-        throw new Error(`Invalid upload: ${errorMsg}`);
+        return createZodErrorResponse(parsedResult.error);
       }
 
       const { audio, question } = parsedResult.data;

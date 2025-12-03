@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import z from "zod";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
 import {
@@ -13,13 +14,13 @@ import {
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
-import { getUserId } from "@/lib/auth-server-func";
+import { getUserSession } from "@/lib/auth-server-func";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
   beforeLoad: async () => {
-    const userId = await getUserId();
-    return { userId };
+    const user = await getUserSession();
+    return { userId: user.id };
   },
   loader: ({ context }) => {
     if (!context.userId) {
@@ -31,18 +32,11 @@ export const Route = createFileRoute("/generate/questions")({
   },
 });
 
-export interface IQuestion {
-  id: number;
-  topic: string;
-  difficulty: string;
-  question: string;
-  expected_answer_outline: string;
-}
+
 
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
   const generateFeedback = useServerFn(generateFeedbackFn);
-  const { userId } = Route.useLoaderData();
   const {
     isPending,
     isError,
@@ -115,7 +109,7 @@ function Questions() {
   return (
     <section className="mx-auto max-w-5xl p-4">
       <h1 className="mb-4 text-center text-2xl font-semibold">
-        Interview questions {userId}
+        Interview questions
       </h1>
       <button
         className="btn btn-primary btn-block py-6 text-2xl"

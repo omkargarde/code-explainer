@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { IQuestion } from "../questions";
-import { AUDIO_FORMAT_CONFIG } from "@/constants/constants";
+import { FORMAT_CONFIG } from "@/constants/constants";
 import ErrorMessage from "@/components/Error";
 
 function AudioRecorder(props: {
@@ -48,12 +48,12 @@ function AudioRecorder(props: {
         stream.getTracks().forEach((track) => track.stop());
 
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: AUDIO_FORMAT_CONFIG.webm.type,
+          type: FORMAT_CONFIG.webm.type,
         });
 
         const formDataToUpload = new FormData();
 
-        const filename = `audio_recording${AUDIO_FORMAT_CONFIG.webm.extension}`;
+        const filename = `audio_recording${FORMAT_CONFIG.webm.extension}`;
         formDataToUpload.append("audio", audioBlob, filename);
 
         formDataToUpload.append("question", props.question.question);

@@ -1,6 +1,6 @@
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-export const markdown = pgTable("markdown", {
+export const markdownTable = pgTable("markdownTable", {
   id: text("id").primaryKey(),
 
   // The actual markdown content, stored as TEXT
@@ -9,7 +9,7 @@ export const markdown = pgTable("markdown", {
   // Foreign Key: Links this markdown entry to the user
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }), // 'cascade' means if the user is deleted, their content is also deleted
+    .references(() => userTable.id, { onDelete: "cascade" }), // 'cascade' means if the user is deleted, their content is also deleted
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -18,7 +18,7 @@ export const markdown = pgTable("markdown", {
     .notNull(),
 });
 
-export const user = pgTable("user", {
+export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -43,7 +43,7 @@ export const session = pgTable("session", {
   userAgent: text("user_agent"),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => userTable.id, { onDelete: "cascade" }),
 });
 
 export const account = pgTable("account", {
@@ -52,7 +52,7 @@ export const account = pgTable("account", {
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => userTable.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
