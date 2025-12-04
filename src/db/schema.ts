@@ -1,7 +1,10 @@
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { createId } from "@paralleldrive/cuid2";
 
 export const markdownTable = pgTable("markdownTable", {
-  id: text("id").primaryKey(),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
 
   // The actual markdown content, stored as TEXT
   content: text("content").notNull(),
@@ -9,7 +12,7 @@ export const markdownTable = pgTable("markdownTable", {
   // Foreign Key: Links this markdown entry to the user
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }), // 'cascade' means if the user is deleted, their content is also deleted
+    .references(() => userTable.id, { onDelete: "cascade" }),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

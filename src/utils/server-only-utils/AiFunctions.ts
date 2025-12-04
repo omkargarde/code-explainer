@@ -3,6 +3,7 @@ import {
   createPartFromUri,
   createUserContent,
 } from "@google/genai";
+import z from "zod";
 import { ENV } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
@@ -10,13 +11,13 @@ const ai = new GoogleGenAI({
   apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
-export async function fetchAIResponse(messages: string) {
+export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   return await ai.models.generateContent({
     model: MODELS.gemini_3_pro_preview,
     contents: messages,
     config: {
       responseMimeType: FORMAT_CONFIG.json.type,
-      responseJsonSchema: z,
+      responseJsonSchema: z.toJSONSchema(schema),
     },
   });
 }

@@ -1,11 +1,10 @@
-import path from "node:path";
 import fs from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import z from "zod";
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gt } from "drizzle-orm";
 import { QuestionSchema } from "./questions-typing";
-import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
-import { checkFileExists } from "@/utils/server-only-utils/checkFileExists";
+import { PROMPTS } from "@/constants/constants.ts";
 
 import { delay } from "@/utils/delay";
 import {
@@ -38,12 +37,18 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
         ),
       );
     if (response_from_db.length > 0) {
-      QuestionSchema.safeParse;
-      return JSON.parse(response_from_db[0].content) as Array<IQuestion>;
+      const safeQuestionsContent = QuestionSchema.safeParse(
+        response_from_db[0].content,
+      );
+      if (!safeQuestionsContent.success) {
+        return createZodErrorResponse(safeQuestionsContent.error);
+      }
+      return safeQuestionsContent.data;
     }
 
     const response = await fetchAIResponse(
       PROMPTS.question_generation_for_javascript_and_react,
+      QuestionSchema,
     );
 
     const generatedContent = response.text;
@@ -51,7 +56,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     if (!generatedContent) {
       throw new Error("failed to generate questions");
     }
-
+    console.log("generatedContent", generatedContent);
     const cleanedContent = generatedContent
       .replace(/^```[a-z]*\s*/i, "") // Remove ```language from start
       .replace(/\s*```$/, "") // Remove ``` from end
@@ -62,10 +67,23 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     await delay(1);
 
     console.log("cleanedContent", cleanedContent);
-    const returnPayload = JSON.parse(cleanedContent) as Array<IQuestion>;
+    const safeGeneratedContent = QuestionSchema.safeParse(cleanedContent);
+    if (!safeGeneratedContent.success) {
+      return createZodErrorResponse(safeGeneratedContent.error);
+    }
 
-    await fs.writeFile(filePath, JSON.stringify(returnPayload));
-    return returnPayload;
+    const request_to_db = await db.insert(markdownTable).values({
+      id: randomUUID(),
+      content: JSON.stringify(safeGeneratedContent.data), // your variable containing the data to save
+      userId: (
+        await db
+          .select({ id: userTable.id })
+          .from(userTable)
+          .where(eq(userTable.email, user.email))
+      )[0].id,
+      updatedAt: new Date(),
+    });
+    return safeGeneratedContent.data;
   },
 );
 
@@ -82,12 +100,12 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
     // parse the input for audio
     try {
       console.log("generateFeedbackFn is called");
-      // We need to cast `data` to `FormData` because `isFormDataSchema` only
-      // asserts that it is a `FormData` instance, but TypeScript doesn't
-      // automatically infer the type for the handler's `data` parameter.
+
       const formData = data as unknown as FormData;
+
       const rawAudio = formData.get("audio");
       const rawQuestion = formData.get("question");
+
       const parsedResult = audioFormDataSchema.safeParse({
         audio: rawAudio,
         question: rawQuestion,
@@ -97,15 +115,17 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
         return createZodErrorResponse(parsedResult.error);
       }
 
-      const { audio, question } = parsedResult.data;
+      const safeFormData = parsedResult.data;
 
       // get AI feedback by sending audio, the question and the answer outline
-      const message = PROMPTS.feedback_for_answer_uploaded(question);
+      const message = PROMPTS.feedback_for_answer_uploaded(
+        safeFormData.question,
+      );
 
       console.log("generating response");
       const response = await fetchAIResponseUsingAudioInput({
-        audio,
-        message,
+        audio: safeFormData.audio,
+        message: message,
       });
 
       if (response instanceof Error) throw response;
