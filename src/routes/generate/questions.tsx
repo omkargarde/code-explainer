@@ -4,13 +4,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import z from "zod";
+import { generateFeedbackFn } from "./-components/generateFeedbackFn";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
-import {
-  generateFeedbackFn,
-  generateQuestionFn,
-} from "@/routes/generate/-components/generateQuestionFn.ts";
+import { generateQuestionFn } from "@/routes/generate/-components/generateQuestionFn.ts";
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
@@ -31,8 +28,6 @@ export const Route = createFileRoute("/generate/questions")({
     return { userId: context.userId };
   },
 });
-
-
 
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
@@ -79,12 +74,40 @@ function Questions() {
   }, [generatedQuestionsData]);
 
   if (isError) {
-    return <h1>{error.message}</h1>;
+    return (
+      <div className="mx-auto max-w-2xl p-4">
+        <div className="rounded bg-red-100 p-6 text-red-700">
+          <h2 className="mb-2 text-lg font-semibold">
+            Error generating questions
+          </h2>
+          <p className="mb-4">{error.message}</p>
+          {error.message.includes("quota") && (
+            <div className="text-sm">
+              <p className="mb-2">
+                This appears to be an API quota issue. You can:
+              </p>
+              <ul className="list-disc pl-5">
+                <li>Try again in a few minutes</li>
+                <li>Check your Google AI API billing settings</li>
+                <li>Use a different API key if available</li>
+              </ul>
+            </div>
+          )}
+          <button
+            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            onClick={() => generateQuestionsFn()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
   if (isPending) {
     return <Loading />;
   }
-  if (generatedQuestionsData.length === 0) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!generatedQuestionsData) {
     return (
       <div className="mt-4 text-gray-500">
         Record your answer above to receive AI feedback
@@ -92,9 +115,10 @@ function Questions() {
     );
   }
 
-  const currentQuestion = generatedQuestionsData[currentIndex];
+  const currentQuestion = generatedQuestionsData;
 
   const handleNext = () => {
+    // @ts-expect-error
     if (currentIndex < generatedQuestionsData.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
@@ -165,6 +189,11 @@ function DisplayFeedback(props: {
       <div className="rounded bg-red-100 p-4 text-red-700">
         <h2 className="font-semibold">Error generating feedback:</h2>
         <p>{props.feedbackData.error}</p>
+        {props.feedbackData.error.includes("quota") && (
+          <div className="mt-2 text-sm">
+            <p>API quota exceeded. Please try again later.</p>
+          </div>
+        )}
       </div>
     );
   }

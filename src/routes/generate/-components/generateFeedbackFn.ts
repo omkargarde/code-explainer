@@ -1,15 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import z from "zod";
 import { PROMPTS } from "@/constants/constants";
 import { fetchAIResponseUsingAudioInput } from "@/utils/server-only-utils/AiFunctions";
 import { createZodErrorResponse } from "@/utils/zod-error-handler";
-
-const audioFormDataSchema = z.object({
-  audio: z.instanceof(File),
-  question: z.string(),
-});
-
-const isFormDataSchema = z.instanceof(FormData);
+import {
+  audioFormDataSchema,
+  isFormDataSchema,
+} from "@/routes/generate/-components/questions-typing";
 
 export const generateFeedbackFn = createServerFn({ method: "POST" })
   .inputValidator(isFormDataSchema)

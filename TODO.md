@@ -8,12 +8,12 @@
 - [x] answer should only be given in audio format
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
-- [ ] make model generate 10 questions.
+- [x] add database to backend , using files is blowing up complexity
+- [ ] make model generate 5 questions.
 - [ ] handle this error {"error":{"code":503,"message":"The model is overloaded.
       Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
-- [ ] add database to backend , using files is blowing up complexity
 - [ ] separate generateQuestionsFn into GET call for
       fetching previously generated question and POST call to generate new questions
 - [ ] add a rich text editor for addition of questions
@@ -47,3 +47,10 @@
 
 - Add unit tests for new features
 - Consider TypeScript strict mode
+
+## to learn
+
+- system architecture
+- python,
+- django,
+- system design

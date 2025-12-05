@@ -12,14 +12,27 @@ const ai = new GoogleGenAI({
 });
 
 export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
-  return await ai.models.generateContent({
-    model: MODELS.gemini_3_pro_preview,
-    contents: messages,
-    config: {
-      responseMimeType: FORMAT_CONFIG.json.type,
-      responseJsonSchema: z.toJSONSchema(schema),
-    },
-  });
+  try {
+    return await ai.models.generateContent({
+      model: MODELS.gemini_flash_lite_preview,
+      contents: messages,
+      config: {
+        responseMimeType: FORMAT_CONFIG.json.type,
+        responseJsonSchema: z.toJSONSchema(schema),
+      },
+    });
+  } catch (error) {
+    console.error("Error in fetchAIResponse:", error);
+    if (error instanceof Error) {
+      if (error.message.includes("429") || error.message.includes("quota")) {
+        throw new Error(
+          "API quota exceeded. Please try again later or check your billing details.",
+        );
+      }
+      throw error;
+    }
+    throw new Error("An unknown error occurred while fetching AI response.");
+  }
 }
 
 export async function fetchAIResponseUsingAudioInput({
@@ -43,7 +56,7 @@ export async function fetchAIResponseUsingAudioInput({
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: MODELS.gemini_flash_lite_preview,
       contents: createUserContent([
         createPartFromUri(myFile.uri, myFile.mimeType),
         message,

@@ -30,7 +30,6 @@ export const QUERY_KEYS = {
   upload_files: "upload",
   generate_feedback: "generateFeedback",
 };
-
 export const DATA_DIRECTORY = {
   upload: "src/data/uploads",
   existing_response: "src/data/generated",
