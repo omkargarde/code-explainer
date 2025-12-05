@@ -9,7 +9,8 @@
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
 - [ ] make model generate 10 questions.
-- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
+- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded.
+      Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
 - [ ] add database to backend , using files is blowing up complexity
@@ -45,3 +46,4 @@
   ## Code Quality
 
 - Add unit tests for new features
+- Consider TypeScript strict mode
