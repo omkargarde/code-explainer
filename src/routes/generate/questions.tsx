@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { generateFeedbackFn } from "./-components/generateFeedbackFn";
+import { generateQuestionFn } from "./-components/generateQuestionFn";
+import type { IQuestion } from "./-components/questions-typing";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
-import { generateQuestionFn } from "@/routes/generate/-components/generateQuestionFn.ts";
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
@@ -36,7 +37,7 @@ function Questions() {
     isPending,
     isError,
     data: generatedQuestionsData,
-    error,
+    error: generatedQuestionsError,
     refetch: generateQuestionsFn,
   } = useQuery({
     queryFn: generateQuestion,
@@ -56,6 +57,16 @@ function Questions() {
   });
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-2xl p-4">
+        <div className="rounded bg-red-100 p-6 text-red-700">
+          {generatedQuestionsError.message}
+        </div>
+      </div>
+    );
+  }
+
   // Keyboard navigation (← and →)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -73,41 +84,11 @@ function Questions() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [generatedQuestionsData]);
 
-  if (isError) {
-    return (
-      <div className="mx-auto max-w-2xl p-4">
-        <div className="rounded bg-red-100 p-6 text-red-700">
-          <h2 className="mb-2 text-lg font-semibold">
-            Error generating questions
-          </h2>
-          <p className="mb-4">{error.message}</p>
-          {error.message.includes("quota") && (
-            <div className="text-sm">
-              <p className="mb-2">
-                This appears to be an API quota issue. You can:
-              </p>
-              <ul className="list-disc pl-5">
-                <li>Try again in a few minutes</li>
-                <li>Check your Google AI API billing settings</li>
-                <li>Use a different API key if available</li>
-              </ul>
-            </div>
-          )}
-          <button
-            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            onClick={() => generateQuestionsFn()}
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
   if (isPending) {
     return <Loading />;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!generatedQuestionsData) {
+
+  if (generatedQuestionsData.length === 0) {
     return (
       <div className="mt-4 text-gray-500">
         Record your answer above to receive AI feedback
@@ -118,7 +99,6 @@ function Questions() {
   const currentQuestion = generatedQuestionsData;
 
   const handleNext = () => {
-    // @ts-expect-error
     if (currentIndex < generatedQuestionsData.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     }
@@ -200,7 +180,6 @@ function DisplayFeedback(props: {
   if (props.feedbackPending) {
     return <Loading />;
   }
-  // return <div>{props.feedbackData.feedback}</div>;
   return (
     <div className="prose mt-4 max-w-none">
       <h2 className="font-semibold">AI Feedback:</h2>{" "}
