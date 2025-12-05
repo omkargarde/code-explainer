@@ -8,6 +8,7 @@
 - [x] answer should only be given in audio format
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
+- [ ] make model generate 10 questions.
 - [ ] handle this error {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
@@ -27,3 +28,40 @@
 - [ ] focus on particular topic
 - [ ] add user agent check for local LLM support
 - [ ] add fallback for local LLM
+
+  ## Priority & Organization
+
+- Group items by category (Frontend, Backend, Features, Infrastructure)
+- Add priority levels (High/Medium/Low)
+- Create epics for related tasks (e.g., "Database Migration", "Question Management")
+
+  ## Technical Improvements
+
+- Error handling: Implement retry logic with exponential backoff for the 503 error
+- Database: Define schema before migration, consider migration scripts
+- API design: Use RESTful conventions for question endpoints
+- Local LLM: Research Ollama or similar for local inference
+
+  ## Feature Enhancements
+
+- Question generation: Add configurable question count (not just 10)
+- RAG implementation: Consider vector database like Pinecone/Weaviate
+- Rich text editor: Evaluate TinyMCE, Quill, or TipTap
+- Auto-tagging: Create a taxonomy system for tech stack classification
+
+  ## Infrastructure
+
+- Domain research: Compare Cloudflare Pages vs Netlify for your use case
+- Deployment: Add CI/CD pipeline configuration
+- Monitoring: Add error tracking (Sentry) and analytics
+
+  ## User Experience
+
+- Landing page: Create wireframes before implementation
+- Resume section: Consider downloadable PDF format
+- Feedback system: Add rating and comment features
+
+  ## Code Quality
+
+- Add unit tests for new features
+- Consider TypeScript strict mode
