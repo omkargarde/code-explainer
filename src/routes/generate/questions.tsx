@@ -6,7 +6,6 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { generateFeedbackFn } from "./-components/generateFeedbackFn";
 import { generateQuestionFn } from "./-components/generateQuestionFn";
-import type { IQuestion } from "./-components/questions-typing";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
 import Loading from "@/components/Loading.tsx";
@@ -33,12 +32,12 @@ export const Route = createFileRoute("/generate/questions")({
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
   const generateFeedback = useServerFn(generateFeedbackFn);
+
   const {
     isPending,
     isError,
     data: generatedQuestionsData,
     error: generatedQuestionsError,
-    refetch: generateQuestionsFn,
   } = useQuery({
     queryFn: generateQuestion,
     queryKey: [QUERY_KEYS.upload_files],
@@ -96,7 +95,7 @@ function Questions() {
     );
   }
 
-  const currentQuestion = generatedQuestionsData;
+  const currentQuestion = generatedQuestionsData[currentIndex];
 
   const handleNext = () => {
     if (currentIndex < generatedQuestionsData.length - 1) {
@@ -117,7 +116,7 @@ function Questions() {
       </h1>
       <button
         className="btn btn-primary btn-block py-6 text-2xl"
-        onClick={() => generateQuestionsFn()}
+        onClick={() => generateQuestion()}
       >
         Generate questions
       </button>
