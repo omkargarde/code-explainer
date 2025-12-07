@@ -3,6 +3,7 @@ import { createRouter } from "@tanstack/react-router";
 // Import the generated route tree
 import * as Sentry from "@sentry/tanstackstart-react";
 import { routeTree } from "./routeTree.gen";
+import { ENV } from "./Env";
 
 // Create a new router instance
 export const getRouter = () => {
