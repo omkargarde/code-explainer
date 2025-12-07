@@ -18,7 +18,7 @@
 - [ ] test url params for managing state before introducing state management library
 - [ ] add state management library like zustand to manage state
 - [ ] investigate result type error management maybe use neverTry,byeThrow
-      or just use theo github snippet
+      or just use the GitHub snippet
 - [ ] separate generateQuestionsFn into GET call for
       fetching previously generated question and POST call to generate new questions
 - [ ] add a rich text editor for addition of questions
