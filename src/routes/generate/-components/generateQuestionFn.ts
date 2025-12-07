@@ -15,7 +15,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
 
     console.log("getting user session");
     if (!userSession.email) {
-      throw new Error("User email not found");
+      throw new Error("User not found");
     }
 
     const twentyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);

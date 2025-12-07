@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { IQuestion } from "./questions-typing";
+import type { IQuestionItem } from "./questions-typing";
 import { FORMAT_CONFIG } from "@/constants/constants";
 import ErrorMessage from "@/components/Error";
 
 function AudioRecorder(props: {
-  question: IQuestion[0];
+  question: IQuestionItem;
   feedbackMutation: (data: FormData) => void;
 }) {
   const [isRecording, setIsRecording] = useState(false);

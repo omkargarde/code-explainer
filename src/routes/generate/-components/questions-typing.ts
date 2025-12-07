@@ -11,12 +11,14 @@ export const QuestionSchema = z
   .array()
   .length(5);
 
+export type IQuestion = z.infer<typeof QuestionSchema>;
+export type IQuestionItem = IQuestion[number];
+
 export const audioFormDataSchema = z.object({
   audio: z.instanceof(File),
   question: z.string(),
 });
 
-export const isFormDataSchema = z.instanceof(FormData);
-
-export type IQuestion = z.infer<typeof QuestionSchema>;
 export type IAudioForm = z.infer<typeof audioFormDataSchema>;
+
+export const isFormDataSchema = z.instanceof(FormData);

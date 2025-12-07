@@ -13,10 +13,8 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
     // parse the input for audio
     console.log("generateFeedbackFn is called");
 
-    const formData = data as unknown as FormData;
-
-    const rawAudio = formData.get("audio");
-    const rawQuestion = formData.get("question");
+    const rawAudio = data.get("audio");
+    const rawQuestion = data.get("question");
 
     const parsedResult = audioFormDataSchema.safeParse({
       audio: rawAudio,
