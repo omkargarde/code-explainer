@@ -5,7 +5,7 @@ import { authClient, useSignIn, useSignOut } from "@/lib/auth-client";
 export default function User() {
   const { data: session, error, isPending } = authClient.useSession();
   if (error) {
-    <ErrorComponent error={error} />;
+    return <ErrorComponent error={error} />;
   }
   if (isPending) {
     return (

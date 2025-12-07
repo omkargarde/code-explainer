@@ -38,6 +38,7 @@ function Questions() {
     isError,
     data: generatedQuestionsData,
     error: generatedQuestionsError,
+    refetch: regenerateQuestions,
   } = useQuery({
     queryFn: generateQuestion,
     queryKey: [QUERY_KEYS.upload_files],
@@ -67,6 +68,8 @@ function Questions() {
   }
 
   // Keyboard navigation (← and →)
+  // TODO: this useEffect is violating rules of react: order of hooks called
+  // TODO: this useEffect need to be removed or made into custom hooks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!generatedQuestionsData) return;
@@ -116,7 +119,7 @@ function Questions() {
       </h1>
       <button
         className="btn btn-primary btn-block py-6 text-2xl"
-        onClick={() => generateQuestion()}
+        onClick={() => regenerateQuestions()}
       >
         Generate questions
       </button>

@@ -74,16 +74,36 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
     }
     console.log("safeGeneratedContent.data", safeGeneratedContent.data[0]);
 
-    const request_to_db = await db.insert(markdownTable).values({
-      content: JSON.stringify(safeGeneratedContent.data), // your variable containing the data to save
-      userId: (
-        await db
-          .select({ id: user.id })
-          .from(user)
-          .where(eq(user.email, userSession.email))
-      )[0].id,
-      updatedAt: new Date(),
-    });
+    const userRecord = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.email, userSession.email));
+
+    if (!userRecord.length) {
+      throw new Error("User not found in database");
+    }
+
+    const request_to_db = await db
+      .insert(markdownTable)
+      .values({
+        content: JSON.stringify(safeGeneratedContent.data), // your variable containing the data to save
+        userId: userRecord[0].id,
+      })
+      .onConflictDoUpdate({
+        target: markdownTable.id,
+        set: {
+          content: JSON.stringify(safeGeneratedContent.data),
+        },
+      })
+      .returning();
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!request_to_db || request_to_db.length === 0) {
+      throw new Error(
+        "failed to insert new generated question in the database",
+      );
+    }
+
     console.log(
       "returning newly generated content",
       safeGeneratedContent.data[0],

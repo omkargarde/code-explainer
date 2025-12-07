@@ -9,11 +9,16 @@
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
 - [x] add database to backend , using files is blowing up complexity
-- [ ] make model generate 5 questions.
+- [x] make model generate 5 questions.
+- [ ] fix the useEffect in Question.tsx (lines 73-87)
 - [ ] handle this error {"error":{"code":503,"message":"The model is overloaded.
       Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
+- [ ] test url params for managing state before introducing state management library
+- [ ] add state management library like zustand to manage state
+- [ ] investigate result type error management maybe use neverTry,byeThrow
+      or just use theo github snippet
 - [ ] separate generateQuestionsFn into GET call for
       fetching previously generated question and POST call to generate new questions
 - [ ] add a rich text editor for addition of questions
