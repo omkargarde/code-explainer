@@ -1,133 +1,113 @@
-import path from "node:path";
-import fs from "node:fs/promises";
-import z from "zod";
 import { createServerFn } from "@tanstack/react-start";
-import type { IQuestion } from "@/routes/generate/questions.tsx";
-import { DATA_DIRECTORY, PROMPTS } from "@/constants/constants.ts";
-import { checkFileExists } from "@/utils/server-only-utils/checkFileExists";
+import { and, eq, gt } from "drizzle-orm";
+import { QuestionSchema } from "./questions-typing";
+import { PROMPTS } from "@/constants/constants.ts";
 
-import { delay } from "@/utils/delay";
-import {
-  fetchAIResponse,
-  fetchAIResponseUsingAudioInput,
-} from "@/utils/server-only-utils/AiFunctions";
+import { fetchAIResponse } from "@/utils/server-only-utils/AiFunctions";
+import { getUserSession } from "@/lib/auth-server-func";
+import { db } from "@/db/database";
+import { markdownTable, user } from "@/db/schema";
+import { createZodErrorResponse } from "@/utils/zod-error-handler";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
-    // Directory where markdown files are saved
-    const RESPONSE_DIR = path.join(
-      process.cwd(),
-      DATA_DIRECTORY.existing_response,
-    );
-    
-    // Ensure directory exists
-    // Ensure directory exists
-    const directoryExists = await checkFileExists(RESPONSE_DIR);
-    if (!directoryExists) {
-      await fs.mkdir(RESPONSE_DIR, { recursive: true });
+    const userSession = await getUserSession();
+
+    console.log("getting user session");
+    if (!userSession.email) {
+      throw new Error("User not found");
     }
 
-    // Ensure File exists
-    const filePath = path.join(RESPONSE_DIR, "questions.md");
-    const fileExists = await checkFileExists(filePath);
+    const twentyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
 
-    if (fileExists) {
-      // check if file is older than 10 minutes
-      const fileMetaData = await fs.stat(filePath);
-
-      const lastModified = fileMetaData.mtime.getTime();
-      const currentTime = Date.now();
-      const tenMinutes = 10 * 60 * 1000;
-
-      const fileIsFresh = currentTime - lastModified < tenMinutes;
-
-      if (fileIsFresh) {
-        const file_content = await fs.readFile(filePath, "utf-8");
-        if (file_content.trim() !== "") {
-          console.log("file is fresh");
-          return JSON.parse(file_content) as Array<IQuestion>;
-        }
+    console.log("fetching previously generated content from database");
+    const response_from_db = await db
+      .select({ content: markdownTable.content })
+      .from(markdownTable)
+      .innerJoin(user, eq(markdownTable.userId, user.id))
+      .where(
+        and(
+          eq(user.email, userSession.email),
+          gt(markdownTable.updatedAt, twentyMinutesAgo),
+        ),
+      );
+    if (response_from_db.length > 0) {
+      const safeQuestionsContent = QuestionSchema.safeParse(
+        JSON.parse(response_from_db[0].content),
+      );
+      if (!safeQuestionsContent.success) {
+        console.error(
+          "error occurred while validating previously generated content",
+          safeQuestionsContent.error,
+        );
+        throw new Error(createZodErrorResponse(safeQuestionsContent.error));
       }
+      console.log(
+        "returning previously generated content",
+        safeQuestionsContent.data[0],
+      );
+      return safeQuestionsContent.data;
     }
 
+    console.log("generating new questions");
     const response = await fetchAIResponse(
       PROMPTS.question_generation_for_javascript_and_react,
+      QuestionSchema,
     );
-    const content = response.text;
-    if (!content) {
+
+    const generatedContent = response.text;
+
+    if (!generatedContent) {
       throw new Error("failed to generate questions");
     }
-    await fs.writeFile(filePath, "");
-    const cleanedContent = content
-      .replace(/^```[a-z]*\s*/i, "") // Remove ```language from start
-      .replace(/\s*```$/, "") // Remove ``` from end
-      .trim();
+    console.log("unadulterated generated content", generatedContent[0]);
+    const safeGeneratedContent = QuestionSchema.safeParse(
+      JSON.parse(generatedContent),
+    );
+    console.log("safeGeneratedContent", safeGeneratedContent.data);
+    if (!safeGeneratedContent.success) {
+      console.error(
+        "error occurred while validating newly generated content",
+        safeGeneratedContent.error,
+      );
+      throw new Error(createZodErrorResponse(safeGeneratedContent.error));
+    }
+    console.log("safeGeneratedContent.data", safeGeneratedContent.data[0]);
 
-    // required for content generation to complete safely
-    await delay(1);
+    const userRecord = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.email, userSession.email));
 
-    console.log("cleanedContent", cleanedContent);
-    const returnPayload = JSON.parse(cleanedContent) as Array<IQuestion>;
+    if (!userRecord.length) {
+      throw new Error("User not found in database");
+    }
 
-    await fs.writeFile(filePath, JSON.stringify(returnPayload));
-    return returnPayload;
+    const request_to_db = await db
+      .insert(markdownTable)
+      .values({
+        content: JSON.stringify(safeGeneratedContent.data), // your variable containing the data to save
+        userId: userRecord[0].id,
+      })
+      .onConflictDoUpdate({
+        target: markdownTable.id,
+        set: {
+          content: JSON.stringify(safeGeneratedContent.data),
+        },
+      })
+      .returning();
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!request_to_db || request_to_db.length === 0) {
+      throw new Error(
+        "failed to insert new generated question in the database",
+      );
+    }
+
+    console.log(
+      "returning newly generated content",
+      safeGeneratedContent.data[0],
+    );
+    return safeGeneratedContent.data;
   },
 );
-
-const audioFormDataSchema = z.object({
-  audio: z.instanceof(File),
-  question: z.string(),
-});
-
-const isFormDataSchema = z.instanceof(FormData);
-
-export const generateFeedbackFn = createServerFn({ method: "POST" })
-  .inputValidator(isFormDataSchema)
-  .handler(async ({ data }) => {
-    // parse the input for audio
-    try {
-      console.log("generateFeedbackFn is called");
-      // We need to cast `data` to `FormData` because `isFormDataSchema` only
-      // asserts that it is a `FormData` instance, but TypeScript doesn't
-      // automatically infer the type for the handler's `data` parameter.
-      const formData = data as unknown as FormData;
-      const rawAudio = formData.get("audio");
-      const rawQuestion = formData.get("question");
-      const parsedResult = audioFormDataSchema.safeParse({
-        audio: rawAudio,
-        question: rawQuestion,
-      });
-
-      if (!parsedResult.success) {
-        const errorMsg = parsedResult.error.issues
-          .map((i) => i.message)
-          .join(", ");
-        throw new Error(`Invalid upload: ${errorMsg}`);
-      }
-
-      const { audio, question } = parsedResult.data;
-
-      // get AI feedback by sending audio, the question and the answer outline
-      const message = PROMPTS.feedback_for_answer_uploaded(question);
-
-      console.log("generating response");
-      const response = await fetchAIResponseUsingAudioInput({
-        audio,
-        message,
-      });
-
-      if (response instanceof Error) throw response;
-      if (!response) throw new Error("failed to generate response");
-
-      // We need to return an object that conforms to the
-      // expected return type, which can include an `error` property.
-      return { feedback: response };
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred.";
-      console.error("error", message);
-      return { error: message };
-    }
-  });

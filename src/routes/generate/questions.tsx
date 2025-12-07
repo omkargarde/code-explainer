@@ -1,40 +1,44 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { generateFeedbackFn } from "./-components/generateFeedbackFn";
+import { generateQuestionFn } from "./-components/generateQuestionFn";
 import { QuestionsCard } from "@/routes/generate/-components/QuestionCard";
 import { QuestionNav } from "@/routes/generate/-components/QuestionNav";
-import {
-  generateFeedbackFn,
-  generateQuestionFn,
-} from "@/routes/generate/-components/generateQuestionFn.ts";
 import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
+import { getUserSession } from "@/lib/auth-server-func";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
+  beforeLoad: async () => {
+    const user = await getUserSession();
+    return { userId: user.id };
+  },
+  loader: ({ context }) => {
+    if (!context.userId) {
+      throw redirect({
+        to: "/",
+      });
+    }
+    return { userId: context.userId };
+  },
 });
-
-export interface IQuestion {
-  id: number;
-  topic: string;
-  difficulty: string;
-  question: string;
-  expected_answer_outline: string;
-}
 
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
   const generateFeedback = useServerFn(generateFeedbackFn);
+
   const {
     isPending,
     isError,
     data: generatedQuestionsData,
-    error,
-    refetch: generateQuestionsFn,
+    error: generatedQuestionsError,
+    refetch: regenerateQuestions,
   } = useQuery({
     queryFn: generateQuestion,
     queryKey: [QUERY_KEYS.upload_files],
@@ -53,7 +57,19 @@ function Questions() {
   });
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-2xl p-4">
+        <div className="rounded bg-red-100 p-6 text-red-700">
+          {generatedQuestionsError.message}
+        </div>
+      </div>
+    );
+  }
+
   // Keyboard navigation (← and →)
+  // TODO: this useEffect is violating rules of react: order of hooks called
+  // TODO: this useEffect need to be removed or made into custom hooks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!generatedQuestionsData) return;
@@ -70,12 +86,10 @@ function Questions() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [generatedQuestionsData]);
 
-  if (isError) {
-    return <h1>{error.message}</h1>;
-  }
   if (isPending) {
     return <Loading />;
   }
+
   if (generatedQuestionsData.length === 0) {
     return (
       <div className="mt-4 text-gray-500">
@@ -105,7 +119,7 @@ function Questions() {
       </h1>
       <button
         className="btn btn-primary btn-block py-6 text-2xl"
-        onClick={() => generateQuestionsFn()}
+        onClick={() => regenerateQuestions()}
       >
         Generate questions
       </button>
@@ -157,13 +171,17 @@ function DisplayFeedback(props: {
       <div className="rounded bg-red-100 p-4 text-red-700">
         <h2 className="font-semibold">Error generating feedback:</h2>
         <p>{props.feedbackData.error}</p>
+        {props.feedbackData.error.includes("quota") && (
+          <div className="mt-2 text-sm">
+            <p>API quota exceeded. Please try again later.</p>
+          </div>
+        )}
       </div>
     );
   }
   if (props.feedbackPending) {
     return <Loading />;
   }
-  // return <div>{props.feedbackData.feedback}</div>;
   return (
     <div className="prose mt-4 max-w-none">
       <h2 className="font-semibold">AI Feedback:</h2>{" "}

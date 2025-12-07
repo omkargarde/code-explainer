@@ -8,10 +8,17 @@
 - [x] answer should only be given in audio format
 - [x] critique on the answers given
 - [x] (not needed) transcribe audio into text
-- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
+- [x] add database to backend , using files is blowing up complexity
+- [x] make model generate 5 questions.
+- [ ] fix the useEffect in Question.tsx (lines 73-87)
+- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded.
+      Please try again later.","status":"UNAVAILABLE"}}
 - [ ] add a scrappy and minimal landing for project
 - [ ] RAG using the previous asked question
-- [ ] add database to backend , using files is blowing up complexity
+- [ ] test url params for managing state before introducing state management library
+- [ ] add state management library like zustand to manage state
+- [ ] investigate result type error management maybe use neverTry,byeThrow
+      or just use the GitHub snippet
 - [ ] separate generateQuestionsFn into GET call for
       fetching previously generated question and POST call to generate new questions
 - [ ] add a rich text editor for addition of questions
@@ -27,3 +34,28 @@
 - [ ] focus on particular topic
 - [ ] add user agent check for local LLM support
 - [ ] add fallback for local LLM
+
+  ## Feature Enhancements
+
+- Question generation: Add configurable question count (not just 10)
+- RAG implementation: Consider vector database like Pinecone/Weaviate
+- Rich text editor: Evaluate TinyMCE, Quill, or TipTap
+- Auto-tagging: Create a taxonomy system for tech stack classification
+
+  ## Infrastructure
+
+- Domain research: Compare Cloudflare Pages vs Netlify for your use case
+- Deployment: Add CI/CD pipeline configuration
+- Monitoring: Add error tracking (Sentry) and analytics
+
+  ## Code Quality
+
+- Add unit tests for new features
+- Consider TypeScript strict mode
+
+## to learn
+
+- system architecture
+- python,
+- django,
+- system design

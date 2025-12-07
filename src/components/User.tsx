@@ -1,14 +1,16 @@
-import { getUser, useSignIn, useSignOut } from "@/lib/auth-client";
+import { ErrorComponent } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
+import { authClient, useSignIn, useSignOut } from "@/lib/auth-client";
 
 export default function User() {
-  const { session, isPending, error } = getUser();
+  const { data: session, error, isPending } = authClient.useSession();
   if (error) {
-    // TODO: redirect to error page
+    return <ErrorComponent error={error} />;
   }
   if (isPending) {
     return (
-      <button className="btn btn-primary" onClick={() => useSignOut()}>
-        Loading
+      <button className="btn btn-primary" disabled>
+        <Loader2 /> loading
       </button>
     );
   }
