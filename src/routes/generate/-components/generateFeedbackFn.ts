@@ -41,7 +41,5 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
     if (response instanceof Error) throw response;
     if (!response) throw new Error("failed to generate response");
 
-    // We need to return an object that conforms to the
-    // expected return type, which can include an `error` property.
     return { feedback: response };
   });

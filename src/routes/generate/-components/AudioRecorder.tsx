@@ -4,7 +4,7 @@ import { FORMAT_CONFIG } from "@/constants/constants";
 import ErrorMessage from "@/components/Error";
 
 function AudioRecorder(props: {
-  question: IQuestion;
+  question: IQuestion[0];
   feedbackMutation: (data: FormData) => void;
 }) {
   const [isRecording, setIsRecording] = useState(false);
