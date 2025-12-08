@@ -29,6 +29,13 @@ export const Route = createFileRoute("/generate/questions")({
   },
 });
 
+/**
+ * Render the interview-question interface with controls to generate questions, navigate between them, record audio answers, and view AI feedback.
+ *
+ * Renders generation controls, a progress/navigation component, the current question card, an audio recorder tied to feedback generation, and a feedback display that handles loading and error states.
+ *
+ * @returns The React element containing the questions UI (generation button, navigation, current question, audio recorder, and feedback area).
+ */
 function Questions() {
   const generateQuestion = useServerFn(generateQuestionFn);
   const generateFeedback = useServerFn(generateFeedbackFn);
