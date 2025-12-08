@@ -8,7 +8,7 @@ export const authMiddleware = createMiddleware().server(
       const session = await auth.api.getSession({
         headers: request.headers,
       });
-      console.log("Auth middleware: Session retrieved", session?.user?.email);
+      console.log("Auth middleware: Session retrieved", session?.user.email);
       return next({
         context: {
           user: {
