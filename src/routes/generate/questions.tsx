@@ -57,19 +57,7 @@ function Questions() {
   });
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (isError) {
-    return (
-      <div className="mx-auto max-w-2xl p-4">
-        <div className="rounded bg-red-100 p-6 text-red-700">
-          {generatedQuestionsError.message}
-        </div>
-      </div>
-    );
-  }
-
   // Keyboard navigation (← and →)
-  // TODO: this useEffect is violating rules of react: order of hooks called
-  // TODO: this useEffect need to be removed or made into custom hooks
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!generatedQuestionsData) return;
@@ -85,6 +73,16 @@ function Questions() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [generatedQuestionsData]);
+
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-2xl p-4">
+        <div className="rounded bg-red-100 p-6 text-red-700">
+          {generatedQuestionsError.message}
+        </div>
+      </div>
+    );
+  }
 
   if (isPending) {
     return <Loading />;
