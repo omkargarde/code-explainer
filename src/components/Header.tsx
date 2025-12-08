@@ -54,7 +54,8 @@ export default function Header() {
           >
             <span className="font-medium">Code</span>
           </Link>*/}
-          <Link
+          {/* TODO: remove or complete the route*/}
+          {/* <Link
             to="/upload"
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
@@ -64,7 +65,7 @@ export default function Header() {
             }}
           >
             <span className="font-medium">Upload</span>
-          </Link>
+          </Link>*/}
           <Link
             to="/generate/questions"
             onClick={() => setIsOpen(false)}
