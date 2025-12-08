@@ -10,6 +10,7 @@ export const auth = betterAuth({
     provider: "pg", // or "mysql", "sqlite"
     schema: schema,
   }),
+  baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
