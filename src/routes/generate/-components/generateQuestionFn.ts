@@ -4,14 +4,15 @@ import { QuestionSchema } from "./questions-typing";
 import { PROMPTS } from "@/constants/constants.ts";
 
 import { fetchAIResponse } from "@/utils/server-only-utils/AiFunctions";
-import { getUserSession } from "@/lib/auth-server-func";
+import { authMiddleware } from "@/lib/auth-middleware";
 import { db } from "@/db/database";
 import { markdownTable, user } from "@/db/schema";
 import { createZodErrorResponse } from "@/utils/zod-error-handler";
 
-export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const userSession = await getUserSession();
+export const generateQuestionFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const userSession = context.user;
 
     console.log("getting user session");
     if (!userSession.email) {
@@ -109,5 +110,4 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       safeGeneratedContent.data[0],
     );
     return safeGeneratedContent.data;
-  },
-);
+  });
