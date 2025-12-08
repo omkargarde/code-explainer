@@ -14,8 +14,9 @@ export const generateQuestionFn = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const userSession = context.user;
 
-    console.log("getting user session");
-    if (!userSession.email) {
+    console.log("generateQuestionFn: User session", userSession);
+    if (!userSession?.email) {
+      console.error("generateQuestionFn: No user email found");
       throw new Error("User not found");
     }
 
