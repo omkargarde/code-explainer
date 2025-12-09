@@ -12,20 +12,23 @@ import Loading from "@/components/Loading.tsx";
 import AudioRecorder from "@/routes/generate/-components/AudioRecorder";
 import { QUERY_KEYS } from "@/constants/constants";
 import { getUserSession } from "@/lib/auth-server-func";
+import { authMiddleware } from "@/lib/auth-middleware";
 
 export const Route = createFileRoute("/generate/questions")({
   component: Questions,
-  beforeLoad: async () => {
-    const user = await getUserSession();
-    return { userId: user.id };
+  server: {
+    middleware: [authMiddleware],
   },
-  loader: ({ context }) => {
-    if (!context.userId) {
+  loader: async () => {
+    console.log("fetching users session in Questions page");
+    const user = await getUserSession();
+
+    if (!user.id) {
       throw redirect({
         to: "/",
       });
     }
-    return { userId: context.userId };
+    return { userId: user.id };
   },
 });
 
