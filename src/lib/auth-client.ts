@@ -18,9 +18,9 @@ export async function useSignIn() {
 
 // TODO: experiment with server function
 /**
- * Signs the current user out and navigates to the root path on success.
+ * Sign out the current user and navigate to the root path on success.
  *
- * Initiates sign-out via the authentication client; on successful sign-out it throws a redirect to "/" to perform navigation.
+ * Initiates sign-out via the authentication client; on successful sign-out this function throws a redirect to "/" to perform navigation.
  */
 export async function useSignOut() {
   await authClient.signOut({
