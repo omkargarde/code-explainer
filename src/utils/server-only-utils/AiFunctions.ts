@@ -7,6 +7,15 @@ import z from "zod";
 import { ENV } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
+/**
+ * Generate AI content from the provided messages and enforce the response structure using the given Zod schema.
+ *
+ * @param messages - The textual prompt or conversation to send to the model.
+ * @param schema - Zod schema that the model's JSON response must conform to.
+ * @returns The model's generated content result, including text and structured JSON according to `schema`.
+ * @throws Error - If the API quota is exceeded (message indicates "429" or "quota").
+ * @throws Error - For other errors that occur while fetching the AI response.
+ */
 export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   try {
     const ai = new GoogleGenAI({
@@ -35,6 +44,13 @@ export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   }
 }
 
+/**
+ * Uploads an audio file, sends it with an accompanying message to the AI model, and returns the model's textual response.
+ *
+ * @param audio - The audio file to upload and include as part of the AI input
+ * @param message - Additional text message to send alongside the uploaded audio
+ * @returns The generated response text on success, or an `Error` instance describing the failure
+ */
 export async function fetchAIResponseUsingAudioInput({
   audio,
   message,
