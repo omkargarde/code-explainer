@@ -1,7 +1,10 @@
 import { redirect } from "@tanstack/react-router";
 import { createAuthClient } from "better-auth/react";
+import { ENV } from "@/Env";
 
-export const authClient = createAuthClient({});
+export const authClient = createAuthClient({
+  basePath: ENV.BETTER_AUTH_URL,
+});
 
 // function for signing out the user
 export async function useSignIn() {
@@ -21,6 +24,11 @@ export async function useSignOut() {
           to: "/",
         });
       },
+      // onError:()=>{
+      // throw redirect({
+      // to
+      // })
+      // }
     },
   });
 }

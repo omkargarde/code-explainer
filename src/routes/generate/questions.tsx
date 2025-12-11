@@ -19,8 +19,7 @@ export const Route = createFileRoute("/generate/questions")({
   server: {
     middleware: [authMiddleware],
   },
-  loader: async () => {
-    console.log("fetching users session in Questions page");
+  beforeLoad: async () => {
     const user = await getUserSession();
 
     if (!user.id) {
@@ -29,6 +28,17 @@ export const Route = createFileRoute("/generate/questions")({
       });
     }
     return { userId: user.id };
+  },
+  loader: async ({ context }) => {
+    console.log("fetching users session in Questions page");
+    const userId = await context.userId;
+
+    if (!userId) {
+      throw redirect({
+        to: "/",
+      });
+    }
+    return { userId: userId };
   },
 });
 

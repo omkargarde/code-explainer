@@ -12,6 +12,7 @@ export const markdownTable = pgTable("markdownTable", {
   // Foreign Key: Links this markdown entry to the user
   userId: text("user_id")
     .notNull()
+    .unique()
     .references(() => user.id, { onDelete: "cascade" }),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
