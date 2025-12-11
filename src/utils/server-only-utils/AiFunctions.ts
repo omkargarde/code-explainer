@@ -18,13 +18,19 @@ import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
  */
 export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   try {
-    // TEMPORARY DEBUG CODE
-    console.log(
-      "API Key loaded (first 5 chars):",
-      ENV.GOOGLE_GENERATIVE_AI_API_KEY
-        ? ENV.GOOGLE_GENERATIVE_AI_API_KEY.substring(0, 5)
-        : "NOT FOUND",
-    );
+    // DEBUG: Inspecting API Key for 401 error
+    const apiKey = ENV.GOOGLE_GENERATIVE_AI_API_KEY;
+    console.log("--- API KEY DEBUG INFO ---");
+    if (!apiKey) {
+      console.error("API Key is MISSING or UNDEFINED");
+    } else {
+      console.log(`API Key Length: ${apiKey.length}`);
+      console.log(`Starts with: ${apiKey.substring(0, 5)}...`);
+      console.log(`Ends with: ...${apiKey.substring(apiKey.length - 5)}`);
+      console.log(`Has whitespace: ${/\s/.test(apiKey)}`);
+      console.log(`Has quotes: ${/['"]/.test(apiKey)}`);
+    }
+    console.log("--------------------------");
 
     const ai = new GoogleGenAI({
       apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -66,13 +72,19 @@ export async function fetchAIResponseUsingAudioInput({
   message: string;
 }) {
   try {
-    // TEMPORARY DEBUG CODE
-    console.log(
-      "API Key loaded (first 5 chars):",
-      ENV.GOOGLE_GENERATIVE_AI_API_KEY
-        ? ENV.GOOGLE_GENERATIVE_AI_API_KEY.substring(0, 5)
-        : "NOT FOUND",
-    );
+    // DEBUG: Inspecting API Key for 401 error
+    const apiKey = ENV.GOOGLE_GENERATIVE_AI_API_KEY;
+    console.log("--- API KEY DEBUG INFO (Audio) ---");
+    if (!apiKey) {
+      console.error("API Key is MISSING or UNDEFINED");
+    } else {
+      console.log(`API Key Length: ${apiKey.length}`);
+      console.log(`Starts with: ${apiKey.substring(0, 5)}...`);
+      console.log(`Ends with: ...${apiKey.substring(apiKey.length - 5)}`);
+      console.log(`Has whitespace: ${/\s/.test(apiKey)}`);
+      console.log(`Has quotes: ${/['"]/.test(apiKey)}`);
+    }
+    console.log("----------------------------------");
 
     const ai = new GoogleGenAI({
       apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
