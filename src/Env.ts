@@ -35,7 +35,7 @@ export const ENV = createEnv({
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     // better auth
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    VITE_BETTER_AUTH_URL: process.env.VITE_BETTER_AUTH_URL,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     // neon db
     DATABASE_URL: process.env.DATABASE_URL,
     // github oauth
