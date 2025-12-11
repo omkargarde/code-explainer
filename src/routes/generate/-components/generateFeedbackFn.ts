@@ -6,13 +6,19 @@ import {
   audioFormDataSchema,
   isFormDataSchema,
 } from "@/routes/generate/-components/questions-typing";
+import { getUserSession } from "@/lib/auth-server-func";
 
 export const generateFeedbackFn = createServerFn({ method: "POST" })
   .inputValidator(isFormDataSchema)
   .handler(async ({ data }) => {
     try {
-      // parse the input for audio
-      console.log("generateFeedbackFn is called");
+      const userSession = await getUserSession();
+      console.log("generateFeedbackFn: User session", userSession);
+
+      if (!userSession.email) {
+        console.error("generateQuestionFn: No user email found");
+        throw new Error("User not found");
+      }
 
       const rawAudio = data.get("audio");
       const rawQuestion = data.get("question");

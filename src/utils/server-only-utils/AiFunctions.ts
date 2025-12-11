@@ -7,12 +7,12 @@ import z from "zod";
 import { ENV } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
-const ai = new GoogleGenAI({
-  apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
-});
-
 export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   try {
+    const ai = new GoogleGenAI({
+      apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+
     return await ai.models.generateContent({
       model: MODELS.gemini_flash_lite_preview,
       contents: messages,
@@ -43,6 +43,11 @@ export async function fetchAIResponseUsingAudioInput({
   message: string;
 }) {
   try {
+    const ai = new GoogleGenAI({
+      apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+
+    console.log("uploading the audio file");
     const myFile = await ai.files.upload({
       file: audio,
       config: { mimeType: audio.type },
@@ -55,6 +60,7 @@ export async function fetchAIResponseUsingAudioInput({
       return new Error("Uploaded mimeType uri is undefined");
     }
 
+    console.log("generating feedback based on audio answer");
     const response = await ai.models.generateContent({
       model: MODELS.gemini_flash_lite_preview,
       contents: createUserContent([
