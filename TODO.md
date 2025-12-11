@@ -13,6 +13,7 @@
 - [x] fix the useEffect in Question.tsx (lines 73-87)
 - [x] add a scrappy and minimal landing for project
 - [x] handle the model overloaded error
+- [ ] migrate to aisdk, i dont want to deal with gemini
 - [ ] upload files again
 - [ ] upload multiple files at same time
 - [ ] RAG using the previous asked question
