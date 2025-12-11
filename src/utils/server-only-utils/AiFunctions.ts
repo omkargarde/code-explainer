@@ -49,10 +49,10 @@ export async function fetchAIResponseUsingAudioInput({
     });
 
     if (!myFile.uri) {
-      return Error("Uploaded file uri is undefined");
+      return new Error("Uploaded file uri is undefined");
     }
     if (!myFile.mimeType) {
-      return Error("Uploaded mimeType uri is undefined");
+      return new Error("Uploaded mimeType uri is undefined");
     }
 
     const response = await ai.models.generateContent({
