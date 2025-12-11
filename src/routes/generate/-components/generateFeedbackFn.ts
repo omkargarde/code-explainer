@@ -48,6 +48,7 @@ console.error("generateFeedbackFn: No user email found");
       if (response instanceof Error) throw response;
       if (!response) throw new Error("failed to generate response");
 
+      console.log("returning response successfully");
       return { feedback: response };
     } catch (error) {
       console.error("Error in generateFeedbackFn:", error);
