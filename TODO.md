@@ -10,11 +10,14 @@
 - [x] (not needed) transcribe audio into text
 - [x] add database to backend , using files is blowing up complexity
 - [x] make model generate 5 questions.
-- [ ] fix the useEffect in Question.tsx (lines 73-87)
-- [ ] handle this error {"error":{"code":503,"message":"The model is overloaded.
+- [x] fix the useEffect in Question.tsx (lines 73-87)
+- [x] add a scrappy and minimal landing for project
+- [x] handle this error {"error":{"code":503,"message":"The model is overloaded.
       Please try again later.","status":"UNAVAILABLE"}}
-- [ ] add a scrappy and minimal landing for project
+- [ ] upload files again
+- [ ] upload multiple files at same time
 - [ ] RAG using the previous asked question
+- [ ] experiment with server function for signout (auth-server-func)
 - [ ] test url params for managing state before introducing state management library
 - [ ] add state management library like zustand to manage state
 - [ ] investigate result type error management maybe use neverTry,byeThrow
