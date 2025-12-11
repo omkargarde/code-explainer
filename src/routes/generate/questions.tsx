@@ -152,6 +152,7 @@ function Questions() {
         question={currentQuestion}
         feedbackMutation={feedbackMutation}
       />
+
       <DisplayFeedback
         feedbackData={feedbackData}
         feedbackError={feedbackError}
@@ -179,24 +180,26 @@ function DisplayFeedback(props: {
   feedbackPending: boolean;
   feedbackErrored: boolean;
   feedbackError: Error | null;
-  feedbackData:
-    | {
-        feedback: string;
-        error?: undefined;
-      }
-    | {
-        error: string;
-        feedback?: undefined;
-      }
-    | undefined;
+  feedbackData: { feedback?: string; error?: string } | undefined;
 }) {
+  if (props.feedbackPending) {
+    return <Loading />;
+  }
+
+  if (props.feedbackErrored) {
+    if (!props.feedbackError) return <h1>something went wrong</h1>;
+    return (
+      <div className="rounded bg-red-100 p-4 text-red-700">
+        <h2 className="font-semibold">Error:</h2>
+        <p>{props.feedbackError.message}</p>
+      </div>
+    );
+  }
+
   if (!props.feedbackData) {
     return <h1>No data found</h1>;
   }
-  if (props.feedbackErrored) {
-    if (!props.feedbackError) return <h1>something went wrong</h1>;
-    return <h1>{props.feedbackError.message}</h1>;
-  }
+
   if (props.feedbackData.error) {
     return (
       <div className="rounded bg-red-100 p-4 text-red-700">
@@ -210,12 +213,14 @@ function DisplayFeedback(props: {
       </div>
     );
   }
-  if (props.feedbackPending) {
-    return <Loading />;
+
+  if (!props.feedbackData.feedback) {
+    return <h1>No feedback available</h1>;
   }
+
   return (
     <div className="prose mt-4 max-w-none">
-      <h2 className="font-semibold">AI Feedback:</h2>{" "}
+      <h2 className="font-semibold">AI Feedback:</h2>
       <Markdown remarkPlugins={[remarkGfm]}>
         {props.feedbackData.feedback}
       </Markdown>

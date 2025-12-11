@@ -80,21 +80,17 @@ export async function fetchAIResponseUsingAudioInput({
     }
 
     console.log("generating feedback based on audio answer");
-    const response = await ai.models.generateContent({
+    return await ai.models.generateContent({
       model: MODELS.gemini_flash_lite_preview,
       contents: createUserContent([
         createPartFromUri(myFile.uri, myFile.mimeType),
         message,
       ]),
     });
-
-    console.log(response.text);
-    return response.text;
   } catch (error) {
     console.error("Error in fetchAIResponseUsingAudioInput:", error);
-    if (error instanceof Error) return error;
-    return new Error(
-      "An unknown error occurred while fetching AI response with audio.",
-    );
+    return new Error("Error in fetchAIResponseUsingAudioInput:", {
+      cause: error,
+    });
   }
 }

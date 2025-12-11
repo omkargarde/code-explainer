@@ -16,7 +16,7 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
       console.log("generateFeedbackFn: User session", userSession);
 
       if (!userSession.email) {
-console.error("generateFeedbackFn: No user email found");
+        console.error("generateFeedbackFn: No user email found");
         throw new Error("User not found");
       }
 
@@ -46,10 +46,11 @@ console.error("generateFeedbackFn: No user email found");
       });
 
       if (response instanceof Error) throw response;
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!response) throw new Error("failed to generate response");
 
       console.log("returning response successfully");
-      return { feedback: response };
+      return { feedback: response.text };
     } catch (error) {
       console.error("Error in generateFeedbackFn:", error);
       throw error;
