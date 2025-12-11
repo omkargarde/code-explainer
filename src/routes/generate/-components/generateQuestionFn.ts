@@ -15,7 +15,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" })
     const userSession = context.user;
 
     console.log("generateQuestionFn: User session", userSession);
-    if (!userSession?.email) {
+    if (!userSession.email) {
       console.error("generateQuestionFn: No user email found");
       throw new Error("User not found");
     }
@@ -92,7 +92,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" })
         userId: userRecord[0].id,
       })
       .onConflictDoUpdate({
-        target: markdownTable.id,
+        target: markdownTable.userId,
         set: {
           content: JSON.stringify(safeGeneratedContent.data),
         },
