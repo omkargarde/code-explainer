@@ -19,7 +19,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
         throw new Error("User not found");
       }
 
-      const twentyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const twentyMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
 
       console.log("fetching previously generated content from database");
       const response_from_db = await db
