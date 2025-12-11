@@ -28,7 +28,7 @@ export const authMiddleware = createMiddleware().server(
       });
     } catch (error) {
       console.error("Auth middleware error::", error);
-      throw new Error("Auth middleware error::", { cause: error });
+      throw error;
     }
   },
 );
