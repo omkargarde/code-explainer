@@ -162,6 +162,19 @@ function Questions() {
   );
 }
 
+/**
+ * Render the appropriate UI for AI feedback based on loading, error, and data states.
+ *
+ * Displays a "No data found" message when no feedback data exists; shows error messages for request-level
+ * or feedback-generation errors (including an API quota note when the error text contains "quota"); shows
+ * a loading state while feedback is being generated; otherwise renders the feedback content as Markdown.
+ *
+ * @param props.feedbackPending - True when feedback generation is in progress
+ * @param props.feedbackErrored - True when a request-level error occurred
+ * @param props.feedbackError - The request-level Error object, or null if unavailable
+ * @param props.feedbackData - Either an object with `feedback` (the rendered text) or an object with `error` (the generation error), or undefined
+ * @returns A JSX element presenting the current feedback, loading indicator, or error message
+ */
 function DisplayFeedback(props: {
   feedbackPending: boolean;
   feedbackErrored: boolean;
