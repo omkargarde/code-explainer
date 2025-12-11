@@ -38,7 +38,7 @@ export const PROMPTS = {
 } as const;
 
 export const MODELS = {
-  gemini_flash_lite_preview: "gemini-2.5-flash-preview-09-2025",
+  gemini_flash_lite_preview: "gemini-2.5-flash-lite",
   gemini_3_pro_preview: "gemini-3-pro-preview",
 } as const;
 
