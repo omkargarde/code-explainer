@@ -19,7 +19,7 @@ Upload your study materials, generate personalized interview questions, and prac
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/your-organization/code-explainer.git
    cd code-explainer
    ```
 
