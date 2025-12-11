@@ -44,7 +44,7 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
 
       return { feedback: response };
     } catch (error) {
-      console.log("Error in generate feedback::", error);
+      console.error("Error in generateFeedbackFn:", error);
       throw error;
     }
   });
