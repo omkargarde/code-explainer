@@ -16,12 +16,12 @@ export async function useSignIn() {
   return data;
 }
 
+// TODO: experiment with server function
 /**
  * Signs the current user out and navigates to the root path on success.
  *
  * Initiates sign-out via the authentication client; on successful sign-out it throws a redirect to "/" to perform navigation.
  */
-// TODO: experiment with server function
 export async function useSignOut() {
   await authClient.signOut({
     fetchOptions: {
