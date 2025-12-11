@@ -16,7 +16,7 @@ export const generateFeedbackFn = createServerFn({ method: "POST" })
       console.log("generateFeedbackFn: User session", userSession);
 
       if (!userSession.email) {
-        console.error("generateQuestionFn: No user email found");
+console.error("generateFeedbackFn: No user email found");
         throw new Error("User not found");
       }
 
