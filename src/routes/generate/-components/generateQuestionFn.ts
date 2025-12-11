@@ -111,7 +111,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       );
       return safeGeneratedContent.data;
     } catch (error) {
-      console.log("error in questions feedback::", error);
+      console.error("Error in generateQuestionFn:", error);
       throw error;
     }
   },
