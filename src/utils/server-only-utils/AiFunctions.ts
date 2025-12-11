@@ -69,9 +69,12 @@ export async function fetchAIResponseUsingAudioInput({
       config: { mimeType: audio.type },
     });
 
+    console.log("verifying file uri");
     if (!myFile.uri) {
       return new Error("Uploaded file uri is undefined");
     }
+
+    console.log("verifying file mime type");
     if (!myFile.mimeType) {
       return new Error("Uploaded mimeType uri is undefined");
     }
