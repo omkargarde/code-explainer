@@ -12,8 +12,7 @@
 - [x] make model generate 5 questions.
 - [x] fix the useEffect in Question.tsx (lines 73-87)
 - [x] add a scrappy and minimal landing for project
-- [x] handle this error {"error":{"code":503,"message":"The model is overloaded.
-      Please try again later.","status":"UNAVAILABLE"}}
+- [x] handle the model overloaded error
 - [ ] upload files again
 - [ ] upload multiple files at same time
 - [ ] RAG using the previous asked question
