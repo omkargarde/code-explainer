@@ -7,6 +7,14 @@ import z from "zod";
 import { ENV } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
+// TEMPORARY DEBUG CODE
+console.log(
+  "API Key loaded (first 5 chars):",
+  ENV.GOOGLE_GENERATIVE_AI_API_KEY
+    ? ENV.GOOGLE_GENERATIVE_AI_API_KEY.substring(0, 5)
+    : "NOT FOUND",
+);
+
 const ai = new GoogleGenAI({
   apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
 });
