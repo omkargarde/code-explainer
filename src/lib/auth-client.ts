@@ -21,19 +21,13 @@ export async function useSignIn() {
  *
  * Initiates sign-out via the authentication client; on successful sign-out it throws a redirect to "/" to perform navigation.
  */
+// TODO: experiment with server function
 export async function useSignOut() {
   await authClient.signOut({
     fetchOptions: {
       onSuccess: () => {
-        throw redirect({
-          to: "/",
-        });
+        throw redirect({ to: "/" });
       },
-      // onError:()=>{
-      // throw redirect({
-      // to
-      // })
-      // }
     },
   });
 }

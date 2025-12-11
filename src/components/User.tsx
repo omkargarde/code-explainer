@@ -1,9 +1,21 @@
-import { ErrorComponent } from "@tanstack/react-router";
+import { ErrorComponent, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { authClient, useSignIn, useSignOut } from "@/lib/auth-client";
+import { authClient, useSignIn } from "@/lib/auth-client";
 
 export default function User() {
+  const navigate = useNavigate();
   const { data: session, error, isPending } = authClient.useSession();
+
+  const signOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          navigate({ to: "/" });
+        },
+      },
+    });
+  };
+
   if (error) {
     return <ErrorComponent error={error} />;
   }
@@ -15,7 +27,7 @@ export default function User() {
     );
   }
   return session?.user ? (
-    <button className="btn btn-primary" onClick={() => useSignOut()}>
+    <button className="btn btn-primary" onClick={signOut}>
       Sign out
     </button>
   ) : (
