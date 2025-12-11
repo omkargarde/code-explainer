@@ -2,6 +2,8 @@
 
 An AI-powered platform that helps you master technical interviews by generating tailored questions from your study notes and providing instant feedback on your verbal answers.
 
+<img width="1917" height="916" alt="image" src="https://github.com/user-attachments/assets/801dc985-d8d4-457c-b6a3-e0abfd607bd5" />
+
 ## Project Summary
 
 Upload your study materials, generate personalized interview questions, and practice with AI-powered audio feedback to improve your technical interview performance.
