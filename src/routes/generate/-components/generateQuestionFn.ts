@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { and, eq, gt } from "drizzle-orm";
+import { GoogleGenAI } from "@google/genai";
+import z from "zod";
 import { QuestionSchema } from "./questions-typing";
-import { PROMPTS } from "@/constants/constants.ts";
+import { FORMAT_CONFIG, MODELS, PROMPTS } from "@/constants/constants.ts";
 
-import { fetchAIResponse } from "@/utils/server-only-utils/AiFunctions";
 import { db } from "@/db/database";
 import { markdownTable, user } from "@/db/schema";
 import { createZodErrorResponse } from "@/utils/zod-error-handler";
 import { getUserSession } from "@/lib/auth-server-func";
+import { ENV } from "@/Env";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
@@ -51,20 +53,33 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       }
 
       console.log("generating new questions");
-      const response = await fetchAIResponse(
-        PROMPTS.question_generation_for_javascript_and_react,
-        QuestionSchema,
-      );
+      // const response = await fetchAIResponse(
+      //   PROMPTS.question_generation_for_javascript_and_react,
+      //   QuestionSchema,
+      // );
+      const ai = new GoogleGenAI({
+        apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+      });
+      const response = await ai.models.generateContent({
+        model: MODELS.gemini_flash_lite_preview,
+        contents: PROMPTS.question_generation_for_javascript_and_react,
+        config: {
+          responseMimeType: FORMAT_CONFIG.json.type,
+          responseJsonSchema: z.toJSONSchema(QuestionSchema),
+        },
+      });
 
       const generatedContent = response.text;
 
       if (!generatedContent) {
         throw new Error("failed to generate questions");
       }
+
       console.log("unadulterated generated content", generatedContent[0]);
       const safeGeneratedContent = QuestionSchema.safeParse(
         JSON.parse(generatedContent),
       );
+
       console.log("safeGeneratedContent", safeGeneratedContent.data);
       if (!safeGeneratedContent.success) {
         console.error(
@@ -73,6 +88,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
         );
         throw new Error(createZodErrorResponse(safeGeneratedContent.error));
       }
+
       console.log("safeGeneratedContent.data", safeGeneratedContent.data[0]);
 
       const userRecord = await db
