@@ -4,7 +4,7 @@ import {
   createUserContent,
 } from "@google/genai";
 import z from "zod";
-import { ENV } from "@/Env";
+import { Env } from "@/Env";
 import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 
 /**
@@ -19,7 +19,7 @@ import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
 export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
   try {
     // DEBUG: Inspecting API Key for 401 error
-    const apiKey = ENV.GOOGLE_GENERATIVE_AI_API_KEY;
+    const apiKey = Env.GOOGLE_GENERATIVE_AI_API_KEY;
     console.log("--- API KEY DEBUG INFO ---");
     if (!apiKey) {
       console.error("API Key is MISSING or UNDEFINED");
@@ -33,7 +33,7 @@ export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
     console.log("--------------------------");
 
     const ai = new GoogleGenAI({
-      apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+      apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
     });
     return await ai.models.generateContent({
       model: MODELS.gemini_flash_lite_preview,
@@ -73,7 +73,7 @@ export async function fetchAIResponseUsingAudioInput({
 }) {
   try {
     // DEBUG: Inspecting API Key for 401 error
-    const apiKey = ENV.GOOGLE_GENERATIVE_AI_API_KEY;
+    const apiKey = Env.GOOGLE_GENERATIVE_AI_API_KEY;
     console.log("--- API KEY DEBUG INFO (Audio) ---");
     if (!apiKey) {
       console.error("API Key is MISSING or UNDEFINED");
@@ -87,7 +87,7 @@ export async function fetchAIResponseUsingAudioInput({
     console.log("----------------------------------");
 
     const ai = new GoogleGenAI({
-      apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+      apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
     });
     console.log("uploading the audio file");
     const myFile = await ai.files.upload({

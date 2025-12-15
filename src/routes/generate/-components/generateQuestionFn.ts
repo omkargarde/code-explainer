@@ -9,7 +9,7 @@ import { db } from "@/db/database";
 import { markdownTable, user } from "@/db/schema";
 import { createZodErrorResponse } from "@/utils/zod-error-handler";
 import { getUserSession } from "@/lib/auth-server-func";
-import { ENV } from "@/Env";
+import { Env } from "@/Env";
 
 export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
   async () => {
@@ -58,7 +58,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       //   QuestionSchema,
       // );
       const ai = new GoogleGenAI({
-        apiKey: ENV.GOOGLE_GENERATIVE_AI_API_KEY,
+        apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
       });
       const response = await ai.models.generateContent({
         model: MODELS.gemini_flash_lite_preview,
