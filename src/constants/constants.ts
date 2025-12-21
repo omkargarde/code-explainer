@@ -37,7 +37,7 @@ export const PROMPTS = {
     `You are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , you are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer given in the audio`,
 } as const;
 
-export const MODELS = {
+export const LLM_MODELS = {
   gemini_flash_lite_preview: "gemini-2.5-flash-lite",
   gemini_3_pro_preview: "gemini-3-pro-preview",
 } as const;

@@ -3,7 +3,7 @@ import { and, eq, gt } from "drizzle-orm";
 import { GoogleGenAI } from "@google/genai";
 import z from "zod";
 import { QuestionSchema } from "./questions-typing";
-import { FORMAT_CONFIG, MODELS, PROMPTS } from "@/constants/constants.ts";
+import { FORMAT_CONFIG, LLM_MODELS, PROMPTS } from "@/constants/constants.ts";
 
 import { db } from "@/db/database";
 import { markdownTable, user } from "@/db/schema";
@@ -61,7 +61,7 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
         apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
       });
       const response = await ai.models.generateContent({
-        model: MODELS.gemini_flash_lite_preview,
+        model: LLM_MODELS.gemini_flash_lite_preview,
         contents: PROMPTS.question_generation_for_javascript_and_react,
         config: {
           responseMimeType: FORMAT_CONFIG.json.type,

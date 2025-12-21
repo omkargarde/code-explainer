@@ -5,7 +5,7 @@ import {
 } from "@google/genai";
 import z from "zod";
 import { Env } from "@/Env";
-import { FORMAT_CONFIG, MODELS } from "@/constants/constants";
+import { FORMAT_CONFIG, LLM_MODELS } from "@/constants/constants";
 
 /**
  * Generate AI content from the provided messages and enforce the response structure using the given Zod schema.
@@ -36,7 +36,7 @@ export async function fetchAIResponse(messages: string, schema: z.ZodSchema) {
       apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
     });
     return await ai.models.generateContent({
-      model: MODELS.gemini_flash_lite_preview,
+      model: LLM_MODELS.gemini_flash_lite_preview,
       contents: messages,
       config: {
         responseMimeType: FORMAT_CONFIG.json.type,
@@ -107,7 +107,7 @@ export async function fetchAIResponseUsingAudioInput({
 
     console.log("generating feedback based on audio answer");
     return await ai.models.generateContent({
-      model: MODELS.gemini_flash_lite_preview,
+      model: LLM_MODELS.gemini_flash_lite_preview,
       contents: createUserContent([
         createPartFromUri(myFile.uri, myFile.mimeType),
         message,
