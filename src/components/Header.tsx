@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import User from "./User";
+import { GradientHeading } from "./GradientHeading";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +19,11 @@ export default function Header() {
           >
             <Menu size={24} />
           </button>
-          <h1 className="ml-4 text-2xl font-semibold">
-            <Link to="/">Mock interviewer</Link>
-          </h1>
+          <GradientHeading className="ml-4 text-2xl font-semibold">
+            <Link to="/">
+              Mock <span className="text-white">interviewer</span>
+            </Link>
+          </GradientHeading>
         </div>
         <User />
       </header>
