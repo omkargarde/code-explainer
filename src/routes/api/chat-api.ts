@@ -4,7 +4,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { Env } from "@/Env";
 import { LLM_MODELS } from "@/constants/constants";
 
-export const Route = createFileRoute("/api/chat")({
+export const Route = createFileRoute("/api/chat-api")({
   server: {
     handlers: {
       POST: async ({ request }) => {

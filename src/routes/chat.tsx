@@ -90,7 +90,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
 function ChatPage() {
   const { messages, sendMessage } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/chat",
+      api: "/api/chat-api",
     }),
   });
   const [input, setInput] = useState("");
