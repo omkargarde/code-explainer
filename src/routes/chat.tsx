@@ -1,4 +1,3 @@
-"use client";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -6,10 +5,9 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
 import type { UIMessage } from "ai";
+import { GradientHeading } from "@/components/GradientHeading";
 
 export const Route = createFileRoute("/chat")({
-  // codeSplitGroupings: [],
-  // ssr: false,
   component: ChatPage,
 });
 
@@ -17,9 +15,9 @@ function InitialLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
-        <h1 className="mb-4 bg-linear-to-r from-orange-500 to-orange-700 bg-clip-text text-6xl font-bold text-transparent uppercase">
+        <GradientHeading className="mb-4 text-6xl">
           Mock <span className="text-white">Interviewer</span>
-        </h1>
+        </GradientHeading>
         {children}
       </div>
     </div>
