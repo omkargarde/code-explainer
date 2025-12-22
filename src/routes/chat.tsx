@@ -140,8 +140,7 @@ function ChatPage() {
               >
                 <Send className="h-4 w-4" />
               </button>
-            </div>{" "}
-            a{" "}
+            </div>
           </form>
         </Layout>
       </div>
