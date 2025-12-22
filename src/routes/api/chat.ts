@@ -18,7 +18,6 @@ export const Route = createFileRoute("/api/chat")({
           const result = streamText({
             model: google(LLM_MODELS.gemini_flash_lite_preview),
             messages: convertToModelMessages(messages),
-            // messages,
           });
 
           return result.toUIMessageStreamResponse();

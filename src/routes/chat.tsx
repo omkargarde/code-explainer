@@ -17,13 +17,9 @@ function InitialLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
-        <h1 className="mb-4 bg-linear-to-r from-orange-500 to-red-600 bg-clip-text text-6xl font-bold text-transparent uppercase">
-          <span className="text-white">TanStack</span> Chat
+        <h1 className="mb-4 bg-linear-to-r from-orange-500 to-orange-700 bg-clip-text text-6xl font-bold text-transparent uppercase">
+          Mock <span className="text-white">Interviewer</span>
         </h1>
-        <p className="mx-auto mb-6 w-2/3 text-lg text-gray-400">
-          You can ask me about anything, I might or might not have a good
-          answer, but you can still ask.
-        </p>
         {children}
       </div>
     </div>
