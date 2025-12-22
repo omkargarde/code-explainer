@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ChatOldRouteImport } from './routes/chatOld'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GenerateQuestionsRouteImport } from './routes/generate/questions'
 import { Route as ApiChatApiRouteImport } from './routes/api/chat-api'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const ChatOldRoute = ChatOldRouteImport.update({
+  id: '/chatOld',
+  path: '/chatOld',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -44,6 +50,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/chatOld': typeof ChatOldRoute
   '/api/chat-api': typeof ApiChatApiRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/chatOld': typeof ChatOldRoute
   '/api/chat-api': typeof ApiChatApiRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
+  '/chatOld': typeof ChatOldRoute
   '/api/chat-api': typeof ApiChatApiRoute
   '/generate/questions': typeof GenerateQuestionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -68,15 +77,23 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/chat'
+    | '/chatOld'
     | '/api/chat-api'
     | '/generate/questions'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/api/chat-api' | '/generate/questions' | '/api/auth/$'
+  to:
+    | '/'
+    | '/chat'
+    | '/chatOld'
+    | '/api/chat-api'
+    | '/generate/questions'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/chat'
+    | '/chatOld'
     | '/api/chat-api'
     | '/generate/questions'
     | '/api/auth/$'
@@ -85,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
+  ChatOldRoute: typeof ChatOldRoute
   ApiChatApiRoute: typeof ApiChatApiRoute
   GenerateQuestionsRoute: typeof GenerateQuestionsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -92,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/chatOld': {
+      id: '/chatOld'
+      path: '/chatOld'
+      fullPath: '/chatOld'
+      preLoaderRoute: typeof ChatOldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
@@ -133,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
+  ChatOldRoute: ChatOldRoute,
   ApiChatApiRoute: ApiChatApiRoute,
   GenerateQuestionsRoute: GenerateQuestionsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

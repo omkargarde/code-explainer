@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { Env } from "@/Env";
+import { google } from "@ai-sdk/google";
 import { LLM_MODELS } from "@/constants/constants";
 
 export const Route = createFileRoute("/api/chat-api")({
@@ -10,10 +9,6 @@ export const Route = createFileRoute("/api/chat-api")({
       POST: async ({ request }) => {
         try {
           const { messages } = await request.json();
-
-          const google = createGoogleGenerativeAI({
-            apiKey: Env.GOOGLE_GENERATIVE_AI_API_KEY,
-          });
 
           const result = streamText({
             model: google(LLM_MODELS.gemini_flash_lite_preview),
