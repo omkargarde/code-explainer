@@ -32,7 +32,6 @@
     "@tanstack/router-plugin": "^1.141.8",
     "ai": "^5.0.116",
     "better-auth": "^1.4.7",
-    "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
     "lucide-react": "^0.544.0",
     "react": "^19.2.3",

@@ -1,7 +1,8 @@
-import { LLM_MODELS } from "@/constants/constants";
 import { google } from "@ai-sdk/google";
 import { createFileRoute } from "@tanstack/react-router";
-import { convertToModelMessages, streamText } from "ai";
+import { Output, convertToModelMessages, streamText } from "ai";
+import { QuestionSchema } from "../generate/-components/questions-typing";
+import { LLM_MODELS, PROMPTS } from "@/constants/constants";
 
 export const Route = createFileRoute("/api/generate-questions")({
   server: {
@@ -13,11 +14,17 @@ export const Route = createFileRoute("/api/generate-questions")({
           const result = streamText({
             model: google(LLM_MODELS.gemini_flash_lite_preview),
             messages: convertToModelMessages(messages),
+            experimental_output: Output.object({
+              schema: QuestionSchema,
+            }),
+            system: PROMPTS.system_prompt
+              .question_generation_for_javascript_and_react as any,
           });
 
           return result.toUIMessageStreamResponse();
         } catch (error) {
           console.error("Chat API error:", error);
+
           return new Response(
             JSON.stringify({ error: "Failed to process chat request" }),
             {

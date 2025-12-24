@@ -6,6 +6,7 @@ import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
 import type { UIMessage } from "ai";
 import { GradientHeading } from "@/components/GradientHeading";
+import { PROMPTS } from "@/constants/constants";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -90,7 +91,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
 function ChatPage() {
   const { messages, sendMessage } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/chat-api",
+      api: "/api/generate-questions",
     }),
   });
 
@@ -105,11 +106,13 @@ function ChatPage() {
           <div className="mx-auto flex max-w-xl space-x-3">
             <button
               type="submit"
-              className="flex items-center p-2 text-orange-500 transition-colors hover:text-orange-400 focus:outline-none disabled:text-gray-500"
-              onClick={() => sendMessage({ text: "" })}
+              className="btn btn-primary flex items-center p-2"
+              onClick={() =>
+                sendMessage({ text: PROMPTS.user_prompt.new_question })
+              }
             >
               <span className="pr-4 text-white">Generate questions </span>
-              <Send className="h-4 w-4" />
+              <Send className="h-4 w-4 text-orange-500 transition-colors hover:text-orange-400" />
             </button>
           </div>
         </Layout>
