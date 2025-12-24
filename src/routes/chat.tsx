@@ -74,7 +74,8 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                   if (part.type === "text") {
                     return (
                       <div className="min-w-0 flex-1" key={index}>
-                        <ReactMarkdown>{part.text}</ReactMarkdown>
+                        {/* <ReactMarkdown>{part.text}</ReactMarkdown> */}
+                        <p>{part.text}</p>
                       </div>
                     );
                   }
