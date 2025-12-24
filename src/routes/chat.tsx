@@ -65,7 +65,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                 </div>
               ) : (
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-700 text-sm font-medium text-white">
-                  Y
+                  YOU
                 </div>
               )}
               <div className="flex-1">
@@ -93,7 +93,6 @@ function ChatPage() {
       api: "/api/chat-api",
     }),
   });
-  const [input, setInput] = useState("");
 
   const Layout = messages.length ? ChattingLayout : InitialLayout;
 
@@ -103,45 +102,16 @@ function ChatPage() {
         <Messages messages={messages} />
 
         <Layout>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage({ text: input });
-              setInput("");
-            }}
-          >
-            <div className="mx-auto flex max-w-xl space-x-3">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type something clever (or don't, we won't judge)..."
-                className="w-full resize-none overflow-hidden rounded-lg border border-orange-500/20 bg-gray-800/50 py-3 pr-12 pl-4 text-sm text-white placeholder-gray-400 shadow-lg focus:border-transparent focus:ring-2 focus:ring-orange-500/50 focus:outline-none"
-                rows={1}
-                style={{ minHeight: "44px", maxHeight: "200px" }}
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = "auto";
-                  target.style.height =
-                    Math.min(target.scrollHeight, 200) + "px";
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage({ text: input });
-                    setInput("");
-                  }
-                }}
-              />
-
-              <button
-                type="submit"
-                disabled={!input.trim()}
-                className="p-2 text-orange-500 transition-colors hover:text-orange-400 focus:outline-none disabled:text-gray-500"
-              >
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
-          </form>
+          <div className="mx-auto flex max-w-xl space-x-3">
+            <button
+              type="submit"
+              className="flex items-center p-2 text-orange-500 transition-colors hover:text-orange-400 focus:outline-none disabled:text-gray-500"
+              onClick={() => sendMessage({ text: "" })}
+            >
+              <span className="pr-4 text-white">Generate questions </span>
+              <Send className="h-4 w-4" />
+            </button>
+          </div>
         </Layout>
       </div>
     </div>

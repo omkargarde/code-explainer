@@ -9,7 +9,7 @@ export const QuestionSchema = z
     expected_answer_outline: z.string(),
   })
   .array()
-  .length(5);
+  .length(1);
 
 export type IQuestion = z.infer<typeof QuestionSchema>;
 export type IQuestionItem = IQuestion[number];

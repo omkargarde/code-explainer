@@ -62,7 +62,8 @@ export const generateQuestionFn = createServerFn({ method: "GET" }).handler(
       });
       const response = await ai.models.generateContent({
         model: LLM_MODELS.gemini_flash_lite_preview,
-        contents: PROMPTS.question_generation_for_javascript_and_react,
+        contents:
+          PROMPTS.system_prompt.question_generation_for_javascript_and_react,
         config: {
           responseMimeType: FORMAT_CONFIG.json.type,
           responseJsonSchema: z.toJSONSchema(QuestionSchema),
