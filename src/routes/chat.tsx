@@ -75,13 +75,10 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                       }
                     } catch (e) {
                       // Not JSON, display as regular text
-                    }
-
-                    return (
                       <div className="min-w-0 flex-1" key={index}>
                         <ReactMarkdown>{part.text}</ReactMarkdown>
-                      </div>
-                    );
+                      </div>;
+                    }
                   }
                 })}
               </div>
