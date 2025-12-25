@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
@@ -73,7 +72,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                   if (part.type === "text") {
                     return (
                       <div className="min-w-0 flex-1" key={index}>
-                        <ReactMarkdown>{part.text}</ReactMarkdown>
+                        {part.text}
                       </div>
                     );
                   }

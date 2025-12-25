@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
@@ -55,7 +54,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
           <div key={id} className="bg-transparent p-4">
             <div className="mx-auto flex w-full max-w-3xl items-start gap-4">
               {role === "assistant" ? (
-                <div className="mt-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-red-600 text-sm font-medium text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-red-600 text-sm font-medium text-white">
                   AI
                 </div>
               ) : (
@@ -64,20 +63,18 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                 </div>
               )}
               <div className="flex-1">
-                {parts.map((part, index) => {
+                {parts.map((part) => {
                   if (part.type === "text") {
                     // Try to parse as JSON first
                     try {
                       const jsonData = JSON.parse(part.text);
                       if (Array.isArray(jsonData) && jsonData.length > 0) {
                         const question = jsonData[0];
-                        return <QuestionCard key={index} question={question} />;
+                        return <QuestionCard question={question} />;
                       }
-                    } catch (e) {
+                    } catch {
                       // Not JSON, display as regular text
-                      <div className="min-w-0 flex-1" key={index}>
-                        <ReactMarkdown>{part.text}</ReactMarkdown>
-                      </div>;
+                      return <div className="flex-1">{part.text}</div>;
                     }
                   }
                 })}

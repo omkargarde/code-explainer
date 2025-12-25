@@ -1,22 +1,8 @@
 import { google } from "@ai-sdk/google";
 import { createFileRoute } from "@tanstack/react-router";
 import { Output, convertToModelMessages, streamText } from "ai";
-import z from "zod";
 import { LLM_MODELS, PROMPTS } from "@/constants/constants";
-
-const QuestionSchema = z
-  .object({
-    id: z.number(),
-    topic: z.string(),
-    difficulty: z.string(),
-    question: z.string(),
-    expected_answer_outline: z.string(),
-  })
-  .array()
-  .min(1)
-  .max(1);
-
-export type IQuestionForPart = z.infer<typeof QuestionSchema>;
+import { QuestionSchema } from "@/typing/questions";
 
 export const Route = createFileRoute("/api/generate-questions")({
   server: {
