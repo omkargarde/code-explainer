@@ -23,10 +23,7 @@ function LandingPage() {
               {/* <Link to="/upload" className="btn btn-primary">
                 Get Started
               </Link>*/}
-              <Link
-                to="/generate/questions"
-                className="btn btn-block btn-primary py-6"
-              >
+              <Link to="/chat" className="btn btn-block btn-primary py-6">
                 Practice Now
               </Link>
             </div>

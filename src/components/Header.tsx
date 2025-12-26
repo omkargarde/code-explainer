@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import User from "./User";
+import { GradientHeading } from "./GradientHeading";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +19,11 @@ export default function Header() {
           >
             <Menu size={24} />
           </button>
-          <h1 className="ml-4 text-2xl font-semibold">
-            <Link to="/">Mock interviewer</Link>
-          </h1>
+          <GradientHeading className="ml-4 text-2xl font-semibold">
+            <Link to="/">
+              Mock <span className="text-white">interviewer</span>
+            </Link>
+          </GradientHeading>
         </div>
         <User />
       </header>
@@ -67,7 +70,7 @@ export default function Header() {
             <span className="font-medium">Upload</span>
           </Link>*/}
           <Link
-            to="/generate/questions"
+            to="/chat"
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
@@ -76,6 +79,17 @@ export default function Header() {
             }}
           >
             <span className="font-medium">Generate questions</span>
+          </Link>
+          <Link
+            to="/chat"
+            onClick={() => setIsOpen(false)}
+            className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
+            activeProps={{
+              className:
+                "flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
+            }}
+          >
+            <span className="font-medium">Chat</span>
           </Link>
         </nav>
       </aside>
