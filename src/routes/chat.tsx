@@ -111,7 +111,7 @@ function ChatPage() {
               }
             >
               <span className="pr-4 text-white">Generate questions </span>
-              <Send className="h-4 w-4 text-orange-500 transition-colors hover:text-orange-400" />
+              <Send className="h-4 w-4" />
             </button>
           </div>
         </Layout>

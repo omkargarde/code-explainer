@@ -70,7 +70,7 @@ export default function Header() {
             <span className="font-medium">Upload</span>
           </Link>*/}
           <Link
-            to="/generate/questions"
+            to="/chat"
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
