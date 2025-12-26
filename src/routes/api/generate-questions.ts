@@ -19,6 +19,7 @@ export const Route = createFileRoute("/api/generate-questions")({
             }),
             system: PROMPTS.system_prompt
               .question_generation_for_javascript_and_react as any,
+            temperature: 2,
           });
 
           return result.toUIMessageStreamResponse();

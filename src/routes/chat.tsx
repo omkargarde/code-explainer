@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Send } from "lucide-react";
@@ -27,20 +27,18 @@ function InitialLayout({ children }: { children: React.ReactNode }) {
 
 function ChattingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute right-0 bottom-0 left-64 border-t border-orange-500/10 bg-gray-900/80 backdrop-blur-sm">
+    <div className="fixed right-0 bottom-0 left-0 w-full border-t border-orange-500/10 bg-gray-900/80 backdrop-blur-sm">
       <div className="mx-auto w-full max-w-3xl px-4 py-3">{children}</div>
     </div>
   );
 }
 
 function Messages({ messages }: { messages: Array<UIMessage> }) {
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
-    }
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   if (!messages.length) {
@@ -48,8 +46,8 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
   }
 
   return (
-    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pb-24">
-      <div className="mx-auto w-full max-w-3xl px-4">
+    <div className="flex-1">
+      <div className="mx-auto w-full max-w-3xl px-4 pb-20">
         {messages.map(({ id, role, parts }) => (
           <div key={id} className="bg-transparent p-4">
             <div className="mx-auto flex w-full max-w-3xl items-start gap-4">
@@ -68,13 +66,19 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                     try {
                       const jsonData = JSON.parse(part.text);
                       if (Array.isArray(jsonData) && jsonData.length > 0) {
-                        return <QuestionCard key={index} question={jsonData[0]} />;
+                        return (
+                          <QuestionCard key={index} question={jsonData[0]} />
+                        );
                       }
                     } catch {
                       // Not JSON, fall through to render as text
                     }
                     // Fallback for non-JSON or invalid structured JSON
-                    return <div key={index} className="flex-1">{part.text}</div>;
+                    return (
+                      <div key={index} className="flex-1">
+                        {part.text}
+                      </div>
+                    );
                   }
                   return null;
                 })}
@@ -97,7 +101,7 @@ function ChatPage() {
   const Layout = messages.length ? ChattingLayout : InitialLayout;
 
   return (
-    <div className="relative flex h-[calc(100vh-32px)] bg-gray-900">
+    <div className="relative flex min-h-screen bg-gray-900">
       <div className="flex flex-1 flex-col">
         <Messages messages={messages} />
 
