@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Send } from "lucide-react";
 import type { UIMessage } from "ai";
 import { GradientHeading } from "@/components/GradientHeading";
 import { QuestionCard } from "@/components/QuestionCard";
 import { PROMPTS } from "@/constants/constants";
+import { AudioRecorder } from "@/components/AudioRecorder";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -32,8 +32,9 @@ function ChattingLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
+// todo:
 function Messages({ messages }: { messages: Array<UIMessage> }) {
+  // auto scrolls to the bottom when new message is generated
   useEffect(() => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
@@ -90,7 +91,6 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
     </div>
   );
 }
-
 function ChatPage() {
   const { messages, sendMessage } = useChat({
     transport: new DefaultChatTransport({
@@ -99,6 +99,9 @@ function ChatPage() {
   });
 
   const Layout = messages.length ? ChattingLayout : InitialLayout;
+  const [isQuestionOrFeedback, setIsQuestionOrFeedback] = useState<
+    "question" | "feedback"
+  >("question");
 
   return (
     <div className="relative flex min-h-screen bg-gray-900">
@@ -107,16 +110,19 @@ function ChatPage() {
 
         <Layout>
           <div className="mx-auto flex max-w-xl space-x-3">
-            <button
-              type="submit"
-              className="btn btn-primary flex items-center p-2"
-              onClick={() =>
-                sendMessage({ text: PROMPTS.user_prompt.new_question })
-              }
-            >
-              <span className="pr-4 text-white">Generate questions </span>
-              <Send className="h-4 w-4" />
-            </button>
+            {isQuestionOrFeedback === "question" && (
+              <button
+                type="submit"
+                className="btn btn-primary flex items-center p-2"
+                onClick={() => {
+                  setIsQuestionOrFeedback("feedback");
+                  sendMessage({ text: PROMPTS.user_prompt.new_question });
+                }}
+              >
+                Generate questions
+              </button>
+            )}
+            {isQuestionOrFeedback === "feedback" && <AudioRecorder />}
           </div>
         </Layout>
       </div>
