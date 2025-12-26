@@ -63,20 +63,20 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                 </div>
               )}
               <div className="flex-1">
-                {parts.map((part) => {
+                {parts.map((part, index) => {
                   if (part.type === "text") {
-                    // Try to parse as JSON first
                     try {
                       const jsonData = JSON.parse(part.text);
                       if (Array.isArray(jsonData) && jsonData.length > 0) {
-                        const question = jsonData[0];
-                        return <QuestionCard question={question} />;
+                        return <QuestionCard key={index} question={jsonData[0]} />;
                       }
                     } catch {
-                      // Not JSON, display as regular text
-                      return <div className="flex-1">{part.text}</div>;
+                      // Not JSON, fall through to render as text
                     }
+                    // Fallback for non-JSON or invalid structured JSON
+                    return <div key={index} className="flex-1">{part.text}</div>;
                   }
+                  return null;
                 })}
               </div>
             </div>
