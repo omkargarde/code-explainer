@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import type { UIMessage } from "ai";
+import type { IQuestion } from "@/typing/questions";
 import { GradientHeading } from "@/components/GradientHeading";
 import { QuestionCard } from "@/components/QuestionCard";
-import { PROMPTS } from "@/constants/constants";
+import { FORMAT_CONFIG, PROMPTS } from "@/constants/constants";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 
 export const Route = createFileRoute("/chat")({
@@ -53,7 +54,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
           <div key={id} className="bg-transparent p-4">
             <div className="mx-auto flex w-full max-w-3xl items-start gap-4">
               {role === "assistant" ? (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-red-600 text-sm font-medium text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-orange-500 to-orange-600 text-sm font-medium text-white">
                   AI
                 </div>
               ) : (
@@ -93,16 +94,10 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
   );
 }
 function ChatPage() {
-  const { messages, sendMessage } = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/generate-questions",
-    }),
-  });
-
-  const Layout = messages.length ? ChattingLayout : InitialLayout;
   const [isQuestionOrFeedback, setIsQuestionOrFeedback] = useState<
     "question" | "feedback"
   >("question");
+  const latestQuestionRef = useRef<IQuestion | null>(null);
 
   const {
     permission,
@@ -113,15 +108,54 @@ function ChatPage() {
     stopRecording,
   } = useAudioRecorder();
 
+  const { messages, sendMessage } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/generate-questions",
+    }),
+  });
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage.role === "assistant") {
+        for (const part of latestMessage.parts) {
+          if (part.type === "text") {
+            try {
+              const jsonData = JSON.parse(part.text);
+              if (Array.isArray(jsonData) && jsonData.length > 0) {
+                latestQuestionRef.current = jsonData[0];
+                console.log("Latest question:", latestQuestionRef.current);
+              }
+            } catch {}
+            break;
+          }
+        }
+      }
+    }
+  }, [messages]);
+
+  const Layout = messages.length ? ChattingLayout : InitialLayout;
+
   async function handleStopRecording() {
     const audioBlob = await stopRecording();
     if (audioBlob) {
       const audioFile = new File([audioBlob], `recording-${Date.now()}.webm`, {
         type: audioBlob.type,
       });
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
       sendMessage({
-        text: PROMPTS.user_prompt.review_answer,
-        files: [audioFile] as any,
+        parts: [
+          {
+            type: "file",
+            url: reader.result as string,
+            mediaType: FORMAT_CONFIG.webm.type, // or 'audio/mpeg', etc.
+          },
+          {
+            type: "text",
+            text: "Please transcribe and summarize this audio.",
+          },
+        ],
       });
     }
   }
@@ -133,6 +167,7 @@ function ChatPage() {
 
         <Layout>
           <div className="mx-auto flex max-w-xl space-x-3">
+            {/* question question*/}
             {isQuestionOrFeedback === "question" && (
               <button
                 type="submit"
@@ -145,6 +180,8 @@ function ChatPage() {
                 Generate questions
               </button>
             )}
+
+            {/* record audio*/}
             {isQuestionOrFeedback === "feedback" && (
               <>
                 {!permission && (

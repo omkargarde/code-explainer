@@ -11,3 +11,5 @@ export const QuestionSchema = z
   .array()
   .min(1)
   .max(1);
+
+export type IQuestion = z.infer<typeof QuestionSchema>[0];
