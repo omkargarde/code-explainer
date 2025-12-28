@@ -6,7 +6,7 @@ import type { UIMessage } from "ai";
 import { GradientHeading } from "@/components/GradientHeading";
 import { QuestionCard } from "@/components/QuestionCard";
 import { PROMPTS } from "@/constants/constants";
-import { AudioRecorder } from "@/components/AudioRecorder";
+import { useAudioRecorder } from "@/hooks/useAudioRecorder";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -61,6 +61,7 @@ function Messages({ messages }: { messages: Array<UIMessage> }) {
                   YOU
                 </div>
               )}
+
               <div className="flex-1">
                 {parts.map((part, index) => {
                   if (part.type === "text") {
@@ -103,6 +104,28 @@ function ChatPage() {
     "question" | "feedback"
   >("question");
 
+  const {
+    permission,
+    recordingStatus,
+    audioUrl,
+    getMicrophonePermission,
+    startRecording,
+    stopRecording,
+  } = useAudioRecorder();
+
+  async function handleStopRecording() {
+    const audioBlob = await stopRecording();
+    if (audioBlob) {
+      const audioFile = new File([audioBlob], `recording-${Date.now()}.webm`, {
+        type: audioBlob.type,
+      });
+      sendMessage({
+        text: PROMPTS.user_prompt.review_answer,
+        files: [audioFile] as any,
+      });
+    }
+  }
+
   return (
     <div className="relative flex min-h-screen bg-gray-900">
       <div className="flex flex-1 flex-col">
@@ -122,7 +145,43 @@ function ChatPage() {
                 Generate questions
               </button>
             )}
-            {isQuestionOrFeedback === "feedback" && <AudioRecorder />}
+            {isQuestionOrFeedback === "feedback" && (
+              <>
+                {!permission && (
+                  <button
+                    onClick={getMicrophonePermission}
+                    className="btn btn-primary"
+                  >
+                    Allow Microphone
+                  </button>
+                )}
+                {permission && (
+                  <>
+                    {recordingStatus === "inactive" && !audioUrl && (
+                      <button
+                        onClick={startRecording}
+                        className="btn btn-primary"
+                        type="button"
+                      >
+                        Record
+                      </button>
+                    )}
+                    {recordingStatus === "recording" && (
+                      <button
+                        onClick={handleStopRecording}
+                        className="btn btn-warning"
+                        type="button"
+                      >
+                        Stop
+                      </button>
+                    )}
+                    {audioUrl && (
+                      <audio src={audioUrl} controls className="max-w-full" />
+                    )}
+                  </>
+                )}
+              </>
+            )}
           </div>
         </Layout>
       </div>

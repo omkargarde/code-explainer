@@ -58,6 +58,7 @@ export const PROMPTS = {
   },
   user_prompt: {
     new_question: "give me a new question",
+    review_answer: "review my answer",
   },
 } as const;
 
