@@ -5,7 +5,7 @@ export const Env = createEnv({
   server: {
     SERVER_URL: z.url().optional(),
     // gemini
-    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1),
+    GEMINI_API_KEY: z.string().min(1),
     // better auth
     BETTER_AUTH_SECRET: z.string().min(10),
     BETTER_AUTH_URL: z.url(),
@@ -32,7 +32,7 @@ export const Env = createEnv({
   // runtimeEnv: import.meta.env,
   runtimeEnv: {
     // gemini
-    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     // better auth
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,

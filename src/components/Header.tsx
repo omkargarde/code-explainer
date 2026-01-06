@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between bg-gray-800 p-4 text-white shadow-lg">
+      <header className="sticky top-0 z-50 flex justify-between bg-gray-800 p-4 text-white shadow-lg">
         <div className="flex items-center">
           <button
             onClick={() => setIsOpen(true)}
