@@ -1,8 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { QuestionCard } from "@/components/QuestionCard";
 import { AudioRecorder } from "@/components/AudioRecorder";
 import { geminiQuestionOptions } from "@/lib/query-options";
+import { useRateLimitCountdown } from "@/hooks/useRateLimitCountdown";
+
+interface ApiErrorResponse {
+  code: number;
+  message: string;
+  retryAfter?: number;
+  quotaLimit?: number;
+}
+
+interface RateLimitInfo {
+  retryAfter: number;
+  quotaLimit?: number;
+  message: string;
+  timestamp: number;
+}
+
+const RATE_LIMIT_KEY = "gemini-rate-limit";
+
+function getErrorDetails(error: Error): ApiErrorResponse | null {
+  try {
+    return JSON.parse(error.message) as ApiErrorResponse;
+  } catch {
+    return null;
+  }
+}
+
+function saveRateLimitInfo(errorDetails: ApiErrorResponse) {
+  const info: RateLimitInfo = {
+    retryAfter: errorDetails.retryAfter || 60,
+    quotaLimit: errorDetails.quotaLimit,
+    message: errorDetails.message,
+    timestamp: Date.now(),
+  };
+  localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(info));
+}
 
 export const Route = createFileRoute("/gemini")({
   component: GeminiChat,
@@ -10,32 +46,53 @@ export const Route = createFileRoute("/gemini")({
 
 function GeminiChat() {
   const { data, isLoading, error, refetch } = useQuery(geminiQuestionOptions);
+  const { remainingSeconds, rateLimitInfo, isRateLimited } =
+    useRateLimitCountdown(RATE_LIMIT_KEY);
+
+  useEffect(() => {
+    if (error) {
+      const errorDetails = getErrorDetails(error);
+      if (errorDetails?.code === 429) {
+        saveRateLimitInfo(errorDetails);
+      }
+    }
+  }, [error]);
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (error)
+  if (isRateLimited && rateLimitInfo) {
     return (
       <div className="rounded-lg border border-red-500 bg-red-900/20 p-6 text-center text-red-400">
-        <p className="text-lg font-semibold">{error.message}</p>
-        {error.message.includes("retryAfter") &&
-          (() => {
-            try {
-              const errorData = JSON.parse(error.message);
-              if (errorData.retryAfter) {
-                return (
-                  <p className="mt-2 text-sm">
-                    Please retry in {errorData.retryAfter} seconds
-                    {errorData.quotaLimit &&
-                      ` (quota: ${errorData.quotaLimit}/day)`}
-                  </p>
-                );
-              }
-            } catch {
-              return null;
-            }
-          })()}
+        <p className="text-lg font-semibold">{rateLimitInfo.message}</p>
+        <div className="mt-4 space-y-2">
+          <p className="text-sm">
+            Rate limit reached. Please retry in{" "}
+            <span className="font-bold text-orange-400">
+              {remainingSeconds}
+            </span>{" "}
+            seconds
+          </p>
+          {rateLimitInfo.quotaLimit && (
+            <p className="text-xs opacity-75">
+              Quota limit: {rateLimitInfo.quotaLimit} requests per day
+            </p>
+          )}
+        </div>
       </div>
     );
+  }
+
+  if (error) {
+    const errorDetails = getErrorDetails(error);
+
+    return (
+      <div className="rounded-lg border border-red-500 bg-red-900/20 p-6 text-center text-red-400">
+        <p className="text-lg font-semibold">
+          {errorDetails?.message || error.message}
+        </p>
+      </div>
+    );
+  }
 
   if (!data) {
     return (
