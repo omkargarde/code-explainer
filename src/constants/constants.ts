@@ -64,7 +64,8 @@ export const PROMPTS = {
 
 export const LLM_MODELS = {
   gemini_flash_lite_preview: "gemini-2.5-flash-lite",
-  gemini_3_pro_preview: "gemini-3-pro-preview",
+  gemini_3_flash_preview: "gemini-3-flash-preview",
+  gemini_2_flash: "gemini-2.5-flash",
 } as const;
 
 export const FORMAT_CONFIG = {

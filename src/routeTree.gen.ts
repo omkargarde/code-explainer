@@ -9,13 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as GeminiRouteImport } from './routes/gemini'
 import { Route as ChatNewRouteImport } from './routes/chat-new'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiGenerateQuestionsNewRouteImport } from './routes/api/generate-questions-new'
 import { Route as ApiGenerateQuestionsRouteImport } from './routes/api/generate-questions'
+import { Route as ApiGeminiQuestionRouteImport } from './routes/api/gemini-question'
+import { Route as ApiGeminiFeedbackRouteImport } from './routes/api/gemini-feedback'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const GeminiRoute = GeminiRouteImport.update({
+  id: '/gemini',
+  path: '/gemini',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatNewRoute = ChatNewRouteImport.update({
   id: '/chat-new',
   path: '/chat-new',
@@ -31,14 +38,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiGenerateQuestionsNewRoute = ApiGenerateQuestionsNewRouteImport.update({
-  id: '/api/generate-questions-new',
-  path: '/api/generate-questions-new',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiGenerateQuestionsRoute = ApiGenerateQuestionsRouteImport.update({
   id: '/api/generate-questions',
   path: '/api/generate-questions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGeminiQuestionRoute = ApiGeminiQuestionRouteImport.update({
+  id: '/api/gemini-question',
+  path: '/api/gemini-question',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGeminiFeedbackRoute = ApiGeminiFeedbackRouteImport.update({
+  id: '/api/gemini-feedback',
+  path: '/api/gemini-feedback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -51,16 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/chat-new': typeof ChatNewRoute
+  '/gemini': typeof GeminiRoute
+  '/api/gemini-feedback': typeof ApiGeminiFeedbackRoute
+  '/api/gemini-question': typeof ApiGeminiQuestionRoute
   '/api/generate-questions': typeof ApiGenerateQuestionsRoute
-  '/api/generate-questions-new': typeof ApiGenerateQuestionsNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/chat-new': typeof ChatNewRoute
+  '/gemini': typeof GeminiRoute
+  '/api/gemini-feedback': typeof ApiGeminiFeedbackRoute
+  '/api/gemini-question': typeof ApiGeminiQuestionRoute
   '/api/generate-questions': typeof ApiGenerateQuestionsRoute
-  '/api/generate-questions-new': typeof ApiGenerateQuestionsNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -68,8 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/chat': typeof ChatRoute
   '/chat-new': typeof ChatNewRoute
+  '/gemini': typeof GeminiRoute
+  '/api/gemini-feedback': typeof ApiGeminiFeedbackRoute
+  '/api/gemini-question': typeof ApiGeminiQuestionRoute
   '/api/generate-questions': typeof ApiGenerateQuestionsRoute
-  '/api/generate-questions-new': typeof ApiGenerateQuestionsNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -78,24 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/chat'
     | '/chat-new'
+    | '/gemini'
+    | '/api/gemini-feedback'
+    | '/api/gemini-question'
     | '/api/generate-questions'
-    | '/api/generate-questions-new'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/chat'
     | '/chat-new'
+    | '/gemini'
+    | '/api/gemini-feedback'
+    | '/api/gemini-question'
     | '/api/generate-questions'
-    | '/api/generate-questions-new'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/chat'
     | '/chat-new'
+    | '/gemini'
+    | '/api/gemini-feedback'
+    | '/api/gemini-question'
     | '/api/generate-questions'
-    | '/api/generate-questions-new'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -103,13 +127,22 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChatRoute: typeof ChatRoute
   ChatNewRoute: typeof ChatNewRoute
+  GeminiRoute: typeof GeminiRoute
+  ApiGeminiFeedbackRoute: typeof ApiGeminiFeedbackRoute
+  ApiGeminiQuestionRoute: typeof ApiGeminiQuestionRoute
   ApiGenerateQuestionsRoute: typeof ApiGenerateQuestionsRoute
-  ApiGenerateQuestionsNewRoute: typeof ApiGenerateQuestionsNewRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/gemini': {
+      id: '/gemini'
+      path: '/gemini'
+      fullPath: '/gemini'
+      preLoaderRoute: typeof GeminiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat-new': {
       id: '/chat-new'
       path: '/chat-new'
@@ -131,18 +164,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/generate-questions-new': {
-      id: '/api/generate-questions-new'
-      path: '/api/generate-questions-new'
-      fullPath: '/api/generate-questions-new'
-      preLoaderRoute: typeof ApiGenerateQuestionsNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/generate-questions': {
       id: '/api/generate-questions'
       path: '/api/generate-questions'
       fullPath: '/api/generate-questions'
       preLoaderRoute: typeof ApiGenerateQuestionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/gemini-question': {
+      id: '/api/gemini-question'
+      path: '/api/gemini-question'
+      fullPath: '/api/gemini-question'
+      preLoaderRoute: typeof ApiGeminiQuestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/gemini-feedback': {
+      id: '/api/gemini-feedback'
+      path: '/api/gemini-feedback'
+      fullPath: '/api/gemini-feedback'
+      preLoaderRoute: typeof ApiGeminiFeedbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -159,8 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChatRoute: ChatRoute,
   ChatNewRoute: ChatNewRoute,
+  GeminiRoute: GeminiRoute,
+  ApiGeminiFeedbackRoute: ApiGeminiFeedbackRoute,
+  ApiGeminiQuestionRoute: ApiGeminiQuestionRoute,
   ApiGenerateQuestionsRoute: ApiGenerateQuestionsRoute,
-  ApiGenerateQuestionsNewRoute: ApiGenerateQuestionsNewRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

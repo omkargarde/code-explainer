@@ -1,106 +1,112 @@
 import { useRef, useState } from "react";
-import { FORMAT_CONFIG } from "@/constants/constants";
 
-// https://blog.logrocket.com/how-to-create-video-audio-recorder-react/
 export function AudioRecorder() {
-  const [permission, setPermission] = useState<boolean>(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [recordingStatus, setRecordingStatus] = useState<
-    "recording" | "inactive" | "paused"
-  >("inactive");
-  const [audioChunks, setAudioChunks] = useState<Array<Blob>>([]);
-  const [audio, setAudio] = useState<string | null>(null);
-  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  async function getMicrophonePermission() {
-    if ("MediaRecorder" in window) {
-      try {
-        const streamData = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        });
-        setStream(streamData);
-        setPermission(true);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-          alert(error.message);
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks: Array<BlobPart> = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
         }
-      }
-    } else {
-      alert("Your browser does not support audio recording.");
-    }
-  }
+      };
 
-  function startRecording() {
-    setRecordingStatus("recording");
-    if (!stream) {
-      console.error("media stream does not exists");
-      alert("please try giving microphone permission again");
-      setPermission(false);
-      return;
-    }
-    const media = new MediaRecorder(stream, {
-      mimeType: FORMAT_CONFIG.webm.type,
-    });
-    mediaRecorder.current = media;
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        setAudioBlob(blob);
+        stream.getTracks().forEach((track) => track.stop());
+      };
 
-    mediaRecorder.current.start();
-    const localAudioChunks: Array<Blob> = [];
-    mediaRecorder.current.ondataavailable = (event) => {
-      if (typeof event.data === "undefined") return;
-      if (event.data.size === 0) return;
-      localAudioChunks.push(event.data);
-    };
-    setAudioChunks(localAudioChunks);
-  }
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
 
-  function stopRecording() {
-    setRecordingStatus("inactive");
-    if (!mediaRecorder.current) {
-      console.error("media stream does not exists");
-      alert("please try giving microphone permission again");
-      setPermission(false);
-      return;
+      timerIntervalRef.current = setInterval(() => {
+        setRecordingTime((prev: number) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
     }
-    mediaRecorder.current.stop();
-    mediaRecorder.current.onstop = () => {
-      const audioBlob = new Blob(audioChunks, {
-        type: FORMAT_CONFIG.webm.type,
-      });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      setAudio(audioUrl);
-      setAudioChunks([]);
-    };
-  }
+  };
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const playRecording = () => {
+    if (audioBlob) {
+      const url = URL.createObjectURL(audioBlob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onplay = () => setIsPlaying(true);
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => setIsPlaying(false);
+
+      audio.play();
+    }
+  };
+
+  const stopPlayback = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
 
   return (
-    <section>
-      {!permission && (
-        <button onClick={getMicrophonePermission}>Allow Microphone</button>
+    <div className="mt-6 flex items-center justify-center gap-4">
+      <button
+        onClick={isRecording ? stopRecording : startRecording}
+        className={`rounded-full px-6 py-3 font-semibold text-white transition-colors ${
+          isRecording
+            ? "bg-red-600 hover:bg-red-700"
+            : "bg-orange-500 hover:bg-orange-600"
+        }`}
+      >
+        {isRecording
+          ? `Stop Recording (${formatTime(recordingTime)})`
+          : "Start Recording"}
+      </button>
+      {audioBlob && (
+        <button
+          onClick={isPlaying ? stopPlayback : playRecording}
+          className={`rounded-full px-6 py-3 font-semibold text-white transition-all ${
+            isPlaying
+              ? "bg-orange-400 animate-pulse"
+              : "bg-orange-500 hover:bg-orange-600"
+          }`}
+        >
+          {isPlaying ? "Stop Playing" : "Play Recording"}
+        </button>
       )}
-      {permission && (
-        <>
-          {recordingStatus === "inactive" ? (
-            <button onClick={startRecording} type="button">
-              Start
-            </button>
-          ) : null}
-          {recordingStatus === "recording" ? (
-            <button onClick={stopRecording} type="button">
-              Stop |{" "}
-            </button>
-          ) : null}
-        </>
-      )}
-      {audio ? (
-        <div className="audio-container">
-          <audio src={audio} controls></audio>
-          <a download href={audio}>
-            Download Recording
-          </a>
-        </div>
-      ) : null}
-    </section>
+    </div>
   );
 }
