@@ -8,6 +8,7 @@ import { GradientHeading } from "@/components/GradientHeading";
 import { QuestionCard } from "@/components/QuestionCard";
 import { FORMAT_CONFIG, PROMPTS } from "@/constants/constants";
 import { useAudioRecorder } from "@/hooks/useAudioRecorder";
+import { Messages } from "@/components/messages";
 
 export const Route = createFileRoute("/chat")({
   component: ChatPage,
@@ -25,7 +26,6 @@ function InitialLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
 function ChattingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="fixed right-0 bottom-0 left-0 w-full border-t border-orange-500/10 bg-gray-900/80 backdrop-blur-sm">
@@ -104,7 +104,7 @@ function ChatPage() {
   return (
     <div className="relative flex h-screen bg-gray-900">
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Messages messages={messages} />
+        {/* <Messages messages={messages} />*/}
 
         <Layout>
           <div className="mx-auto flex max-w-xl space-x-3">

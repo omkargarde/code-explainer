@@ -66,10 +66,10 @@ function GeminiChat() {
         <p className="text-lg font-semibold">{rateLimitInfo.message}</p>
         <div className="mt-4 space-y-2">
           <p className="text-sm">
-            Rate limit reached. Please retry in{" "}
+            Rate limit reached. Please retry in
             <span className="font-bold text-orange-400">
               {remainingSeconds}
-            </span>{" "}
+            </span>
             seconds
           </p>
           {rateLimitInfo.quotaLimit && (
