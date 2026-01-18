@@ -100,9 +100,12 @@ function GeminiChat() {
         <div className="mx-auto w-full max-w-3xl text-center">
           <button
             onClick={() => refetch()}
-            className="rounded-full bg-orange-500 px-8 py-4 font-semibold text-white hover:bg-orange-600 transition-colors"
+            disabled={isRateLimited}
+            className="rounded-full bg-orange-500 px-8 py-4 font-semibold text-white hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600"
           >
-            Get Question
+            {isRateLimited
+              ? `Get Question (${remainingSeconds}s)`
+              : "Get Question"}
           </button>
         </div>
       </div>
