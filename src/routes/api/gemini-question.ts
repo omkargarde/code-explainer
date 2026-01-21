@@ -10,7 +10,7 @@ import { LLM_MODELS, PROMPTS } from "@/constants/constants";
 const cache = {
   data: null as string | null,
   timestamp: 0,
-  CACHE_DURATION: 45000,
+  CACHE_DURATION: 600000,
 };
 
 export const Route = createFileRoute("/api/gemini-question")({
@@ -70,7 +70,7 @@ export const Route = createFileRoute("/api/gemini-question")({
                 );
               }
             } catch {
-              console.log("Failed to parse error as JSON");
+              console.log("Failed to parse gemini api error");
             }
 
             return new Response(

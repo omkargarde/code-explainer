@@ -26,3 +26,5 @@ export const FeedbackSchema = z.object({
   communicationFeedback: CommunicationFeedbackSchema,
   summary: SummarySchema,
 });
+
+export type IFeedback = z.infer<typeof FeedbackSchema>;

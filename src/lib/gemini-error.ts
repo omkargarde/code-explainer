@@ -63,3 +63,4 @@ export function parseGeminiError(error: GeminiApiError): ParsedGeminiError {
     quotaLimit,
   };
 }
+
