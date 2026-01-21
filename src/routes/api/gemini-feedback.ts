@@ -1,11 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import { createFileRoute } from "@tanstack/react-router";
 import z from "zod";
-import type { GeminiApiError } from "@/lib/gemini-error";
 import { LLM_MODELS, PROMPTS } from "@/constants/constants";
 import { Env } from "@/Env";
 import { FeedbackSchema } from "@/typing/feedback";
-import { parseGeminiError } from "@/lib/gemini-error";
+import { handleGeminiError } from "@/lib/gemini-error";
 
 export const Route = createFileRoute("/api/gemini-feedback")({
   server: {
@@ -56,34 +55,9 @@ export const Route = createFileRoute("/api/gemini-feedback")({
           console.log(response.text);
           return new Response(response.text);
         } catch (err: unknown) {
-          if (err && typeof err === "object" && "message" in err) {
-            const errorMessage = err.message as string;
-            try {
-              const errorData = JSON.parse(errorMessage) as GeminiApiError;
-              const parsedError = parseGeminiError(errorData);
-
-              if (parsedError.isRateLimitError) {
-                return new Response(
-                  JSON.stringify({
-                    code: 429,
-                    message: parsedError.message,
-                    retryAfter: parsedError.retryAfterSeconds,
-                    quotaLimit: parsedError.quotaLimit,
-                  }),
-                  {
-                    status: 429,
-                    headers: { "Content-Type": "application/json" },
-                  },
-                );
-              }
-            } catch {
-              console.log("Failed to parse gemini api error");
-            }
-
-            return new Response(
-              JSON.stringify({ code: 500, message: errorMessage }),
-              { status: 500, headers: { "Content-Type": "application/json" } },
-            );
+          const geminiErrorResponse = handleGeminiError(err);
+          if (geminiErrorResponse) {
+            return geminiErrorResponse;
           }
 
           return new Response(

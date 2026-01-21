@@ -64,3 +64,36 @@ export function parseGeminiError(error: GeminiApiError): ParsedGeminiError {
   };
 }
 
+export function handleGeminiError(err: unknown): Response | null {
+  if (err && typeof err === "object" && "message" in err) {
+    const errorMessage = err.message as string;
+    try {
+      const errorData = JSON.parse(errorMessage) as GeminiApiError;
+      const parsedError = parseGeminiError(errorData);
+
+      if (parsedError.isRateLimitError) {
+        return new Response(
+          JSON.stringify({
+            code: 429,
+            message: parsedError.message,
+            retryAfter: parsedError.retryAfterSeconds,
+            quotaLimit: parsedError.quotaLimit,
+          }),
+          {
+            status: 429,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
+    } catch {
+      console.log("Failed to parse gemini api error");
+    }
+
+    return new Response(JSON.stringify({ code: 500, message: errorMessage }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  return null;
+}
