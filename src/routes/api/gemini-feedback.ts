@@ -64,7 +64,20 @@ export const Route = createFileRoute("/api/gemini-feedback")({
 
           const response = await ai.models.generateContent({
             model: LLM_MODELS.gemini_3_flash_preview,
-            contents: [prompt, uploadedFile],
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { text: prompt },
+                  {
+                    fileData: {
+                      fileUri: uploadedFile.uri,
+                      mimeType: uploadedFile.mimeType,
+                    },
+                  },
+                ],
+              },
+            ],
             config: {
               responseMimeType: "application/json",
               responseJsonSchema: z.toJSONSchema(FeedbackSchema),
