@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { google } from "@ai-sdk/google";
-import { Output, streamText } from "ai";
+import { GoogleGenAI } from "@google/genai";
+import z from "zod";
+import { handleGeminiError } from "@/lib/gemini-error";
 import { Env } from "@/Env";
 import { QuestionSchema } from "@/typing/questions";
 import { LLM_MODELS, PROMPTS } from "@/constants/constants";
@@ -34,32 +35,38 @@ export const Route = createFileRoute("/api/gemini-question")({
         console.log(
           "[gemini-question] [cache miss] Calling Gemini API for new question",
         );
+        const ai = new GoogleGenAI({ apiKey: Env.GEMINI_API_KEY });
 
         try {
-          const result = streamText({
-            model: google(LLM_MODELS.gemini_3_flash_preview, {
-              apiKey: Env.GEMINI_API_KEY,
-            }),
-            messages: [
-              {
-                role: "system",
-                content: PROMPTS.system_prompt
-                  .question_generation_for_javascript_and_react as any,
-              },
-              {
-                role: "user",
-                content: "Generate one interview question",
-              },
-            ],
-            experimental_output: Output.object({
-              schema: QuestionSchema,
-            }),
+          const response = await ai.models.generateContent({
+            model: LLM_MODELS.gemini_3_flash_preview,
+            contents:
+              PROMPTS.system_prompt
+                .question_generation_for_javascript_and_react,
+            config: {
+              responseMimeType: "application/json",
+              responseJsonSchema: z.toJSONSchema(QuestionSchema),
+            },
           });
 
-          console.log("[gemini-question] Streaming response started");
-          return result.toDataStreamResponse();
+          console.log(
+            `[gemini-question] Response received: ${response.text ? "success" : "no text"}`,
+          );
+
+          if (response.text) {
+            cache.data = response.text;
+            cache.timestamp = now;
+            console.log("[gemini-question] Response cached");
+          }
+
+          return new Response(response.text);
         } catch (err: unknown) {
           console.error("[gemini-question] Error occurred:", err);
+          const geminiErrorResponse = handleGeminiError(err);
+          if (geminiErrorResponse) {
+            return geminiErrorResponse;
+          }
+
           console.log("[gemini-question] unhandled error occurred");
           return new Response(
             JSON.stringify({ code: 500, message: "Unknown error" }),
