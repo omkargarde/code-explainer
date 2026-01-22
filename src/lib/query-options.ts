@@ -4,7 +4,9 @@ import type { IFeedback } from "@/typing/feedback";
 export const geminiQuestionOptions = {
   queryKey: ["gemini-question"],
   queryFn: async () => {
+    console.log("[query-options] geminiQuestionOptions queryFn called");
     const response = await fetch("/api/gemini-question");
+    console.log("[query-options] Response status:", response.status);
     if (!response.ok) {
       if (response.status === 429) {
         const errorData = await response.json();
@@ -26,6 +28,10 @@ export const geminiFeedbackOptions = {
     question: IQuestion;
     audioBlob: Blob;
   }) => {
+    console.log("[query-options] geminiFeedbackOptions mutationFn called", {
+      question: question.question,
+      audioBlobSize: audioBlob.size,
+    });
     const formData = new FormData();
     formData.append("question", JSON.stringify(question));
     formData.append("audioBlob", audioBlob);
@@ -34,6 +40,8 @@ export const geminiFeedbackOptions = {
       method: "POST",
       body: formData,
     });
+
+    console.log("[query-options] Feedback response status:", response.status);
 
     if (!response.ok) {
       if (response.status === 429) {

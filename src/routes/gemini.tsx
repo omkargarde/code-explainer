@@ -55,6 +55,7 @@ function GeminiChat() {
   const feedbackMutation = useMutation(geminiFeedbackOptions);
 
   const handleSubmitAnswer = (audioBlob: Blob) => {
+    console.log("[gemini] Submit answer triggered", { audioBlob });
     if (data) {
       feedbackMutation.mutate({ question: data, audioBlob });
     }
@@ -110,7 +111,12 @@ function GeminiChat() {
       <div className="flex h-screen overflow-hidden items-center justify-center bg-gray-900 px-2">
         <div className="mx-auto w-full max-w-3xl text-center">
           <button
-            onClick={() => refetch()}
+            onClick={() => {
+              console.log(
+                "[gemini] Get Question button clicked, calling refetch",
+              );
+              refetch();
+            }}
             disabled={isRateLimited}
             className="rounded-full bg-orange-500 px-8 py-4 font-semibold text-white hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600"
           >

@@ -32,7 +32,9 @@ export const Route = createFileRoute("/api/gemini-question")({
           });
         }
 
-        console.log("[gemini-question] Calling Gemini API for new question");
+        console.log(
+          "[gemini-question] [cache miss] Calling Gemini API for new question",
+        );
         const ai = new GoogleGenAI({ apiKey: Env.GEMINI_API_KEY });
 
         try {
@@ -48,7 +50,7 @@ export const Route = createFileRoute("/api/gemini-question")({
           });
 
           console.log(
-            `[gemini-question] [cache miss] Response received: ${response.text ? "success" : "no text"}`,
+            `[gemini-question] Response received: ${response.text ? "success" : "no text"}`,
           );
 
           if (response.text) {
