@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { QuestionCard } from "@/components/QuestionCard";
 import { AudioRecorder } from "@/components/AudioRecorder";
-import { geminiQuestionOptions } from "@/lib/query-options";
+import {
+  geminiFeedbackOptions,
+  geminiQuestionOptions,
+} from "@/lib/query-options";
 import { useRateLimitCountdown } from "@/hooks/useRateLimitCountdown";
 
 interface ApiErrorResponse {
@@ -48,6 +51,14 @@ function GeminiChat() {
   const { data, isLoading, error, refetch } = useQuery(geminiQuestionOptions);
   const { remainingSeconds, rateLimitInfo, isRateLimited } =
     useRateLimitCountdown(RATE_LIMIT_KEY);
+
+  const feedbackMutation = useMutation(geminiFeedbackOptions);
+
+  const handleSubmitAnswer = (audioBlob: Blob) => {
+    if (data) {
+      feedbackMutation.mutate({ question: data, audioBlob });
+    }
+  };
 
   useEffect(() => {
     if (error) {
@@ -116,7 +127,49 @@ function GeminiChat() {
     <div className="flex h-screen overflow-hidden items-center justify-center bg-gray-900 px-2">
       <div className="mx-auto w-full max-w-3xl overflow-y-auto max-h-screen">
         <QuestionCard question={data} />
-        <AudioRecorder />
+        <AudioRecorder
+          onSubmit={handleSubmitAnswer}
+          isSubmitting={feedbackMutation.isPending}
+        />
+        {feedbackMutation.data && (
+          <section className="mt-6 p-4 rounded-lg border border-green-500 bg-green-900/20">
+            <h3 className="text-lg font-semibold text-green-400 mb-4">
+              Feedback Received
+            </h3>
+            <div className="text-gray-300">
+              <p className="font-semibold mb-2">Technical Feedback:</p>
+              <ul className="list-disc list-inside text-sm space-y-1 mb-4">
+                <li>
+                  {feedbackMutation.data.technicalFeedback.technicalAccuracy}
+                </li>
+                <li>{feedbackMutation.data.technicalFeedback.completeness}</li>
+                <li>
+                  {
+                    feedbackMutation.data.technicalFeedback
+                      .bestPracticesAndCodeQuality
+                  }
+                </li>
+              </ul>
+              <p className="font-semibold mb-2">Summary:</p>
+              <ul className="list-disc list-inside text-sm space-y-1">
+                <li>
+                  <strong>Strengths:</strong>{" "}
+                  {feedbackMutation.data.summary.strengths.join(", ")}
+                </li>
+                <li>
+                  <strong>Areas for Improvement:</strong>{" "}
+                  {feedbackMutation.data.summary.areasForImprovement.join(", ")}
+                </li>
+              </ul>
+            </div>
+          </section>
+        )}
+        {feedbackMutation.error && (
+          <div className="mt-6 p-4 rounded-lg border border-red-500 bg-red-900/20 text-red-400">
+            <p className="font-semibold">Error submitting answer:</p>
+            <p className="text-sm">{feedbackMutation.error.message}</p>
+          </div>
+        )}
       </div>
     </div>
   );

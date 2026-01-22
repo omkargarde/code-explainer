@@ -1,6 +1,14 @@
 import { useRef, useState } from "react";
 
-export function AudioRecorder() {
+interface AudioRecorderProps {
+  onSubmit?: (audioBlob: Blob) => void;
+  isSubmitting?: boolean;
+}
+
+export function AudioRecorder({
+  onSubmit,
+  isSubmitting = false,
+}: AudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -81,6 +89,12 @@ export function AudioRecorder() {
     }
   };
 
+  const handleSubmit = () => {
+    if (audioBlob && onSubmit) {
+      onSubmit(audioBlob);
+    }
+  };
+
   return (
     <div className="mt-6 flex items-center justify-center gap-4">
       <button
@@ -96,16 +110,27 @@ export function AudioRecorder() {
           : "Start Recording"}
       </button>
       {audioBlob && (
-        <button
-          onClick={isPlaying ? stopPlayback : playRecording}
-          className={`rounded-full px-6 py-3 font-semibold text-white transition-all ${
-            isPlaying
-              ? "bg-orange-400 animate-pulse"
-              : "bg-orange-500 hover:bg-orange-600"
-          }`}
-        >
-          {isPlaying ? "Stop Playing" : "Play Recording"}
-        </button>
+        <>
+          <button
+            onClick={isPlaying ? stopPlayback : playRecording}
+            className={`rounded-full px-6 py-3 font-semibold text-white transition-all ${
+              isPlaying
+                ? "bg-orange-400 animate-pulse"
+                : "bg-orange-500 hover:bg-orange-600"
+            }`}
+          >
+            {isPlaying ? "Stop Playing" : "Play Recording"}
+          </button>
+          {onSubmit && (
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="rounded-full px-6 py-3 font-semibold text-white transition-colors bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Answer"}
+            </button>
+          )}
+        </>
       )}
     </div>
   );
