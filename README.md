@@ -1,10 +1,13 @@
 # Code Explainer - Technical Interview Prep Platform
 
-An AI-powered platform that helps you master technical interviews by generating tailored questions from your study notes and providing instant feedback on your verbal answers.
+An AI-powered platform that helps you master technical interviews
+by generating tailored questions from your study notes and
+providing instant feedback on your verbal answers.
 
 ## Project Summary
 
-Upload your study materials, generate personalized interview questions, and practice with AI-powered audio feedback to improve your technical interview performance.
+Upload your study materials, generate personalized interview questions, and
+practice with AI-powered audio feedback to improve your technical interview performance.
 
 ## Setup Instructions
 
@@ -43,9 +46,10 @@ Upload your study materials, generate personalized interview questions, and prac
    ```
 
 5. **Start the development server**
-   ```bash
+
+```bash
    bun run dev
-   ```
+```
 
 The application will be available at `http://localhost:3000`.
 
@@ -85,6 +89,7 @@ The application will be available at `http://localhost:3000`.
 
 ## Development
 
-This project uses file-based routing with TanStack Router. Routes are defined in the `src/routes` directory.
+This project uses file-based routing with TanStack Router.
+Routes are defined in the `src/routes` directory.
 
 For more detailed documentation on the TanStack ecosystem, visit the [TanStack documentation](https://tanstack.com).
