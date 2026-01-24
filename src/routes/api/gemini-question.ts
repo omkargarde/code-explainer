@@ -6,35 +6,12 @@ import { Env } from "@/Env";
 import { QuestionSchema } from "@/typing/questions";
 import { LLM_MODELS, PROMPTS } from "@/constants/constants";
 
-const cache = {
-  data: null as string | null,
-  timestamp: 0,
-  CACHE_DURATION: 600000,
-};
-
 export const Route = createFileRoute("/api/gemini-question")({
   server: {
     handlers: {
       GET: async () => {
         console.log("[gemini-question] Request received");
-        const now = Date.now();
-        const timeSinceLastCall = now - cache.timestamp;
-        console.log(
-          `[gemini-question] Time since last call: ${timeSinceLastCall}ms, cache duration: ${cache.CACHE_DURATION}ms`,
-        );
-
-        if (cache.data && timeSinceLastCall < cache.CACHE_DURATION) {
-          console.log(
-            "[gemini-question] [cache hit] Returning cached response",
-          );
-          return new Response(cache.data, {
-            headers: { "Content-Type": "application/json" },
-          });
-        }
-
-        console.log(
-          "[gemini-question] [cache miss] Calling Gemini API for new question",
-        );
+        console.log("[gemini-question] Calling Gemini API for new question");
         const ai = new GoogleGenAI({ apiKey: Env.GEMINI_API_KEY });
 
         try {
@@ -52,12 +29,6 @@ export const Route = createFileRoute("/api/gemini-question")({
           console.log(
             `[gemini-question] Response received: ${response.text ? "success" : "no text"}`,
           );
-
-          if (response.text) {
-            cache.data = response.text;
-            cache.timestamp = now;
-            console.log("[gemini-question] Response cached");
-          }
 
           return new Response(response.text);
         } catch (err: unknown) {
