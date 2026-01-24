@@ -39,28 +39,16 @@
 - [ ] focus on particular topic
 - [ ] add user agent check for local LLM support
 - [ ] add fallback for local LLM
-
-  ## Feature Enhancements
-
-- Question generation: Add configurable question count (not just 10)
-- RAG implementation: Consider vector database like Pinecone/Weaviate
-- Rich text editor: Evaluate TinyMCE, Quill, or TipTap
-- Auto-tagging: Create a taxonomy system for tech stack classification
-
-  ## Infrastructure
-
-- Domain research: Compare Cloudflare Pages vs Netlify for your use case
-- Deployment: Add CI/CD pipeline configuration
-- Monitoring: Add error tracking (Sentry) and analytics
-
-  ## Code Quality
-
-- Add unit tests for new features
-- Consider TypeScript strict mode
-
-## to learn
-
-- system architecture
-- python,
-- django,
-- system design
+- [ ] re-evaluate and enhance question display with
+      better formatting and visual hierarchy
+- [ ] implement multi-file upload with drag-and-drop interface
+- [ ] integrate vector database for advanced RAG capabilities
+- [ ] design global state management architecture with Zustand
+- [ ] create rich text editor component for question editing
+- [ ] build code challenge system with execution environment
+- [ ] set up CI/CD pipeline for automated deployment
+- [ ] integrate error tracking and monitoring system
+- [ ] optimize bundle size and implement lazy loading
+- [ ] add comprehensive accessibility features (WCAG compliance)
+- [ ] create component documentation and storybook
+- [ ] implement performance monitoring and optimization

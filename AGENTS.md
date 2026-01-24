@@ -9,7 +9,9 @@ This project uses **bun** instead of npm.
 ## Essential Commands
 
 - `bun run dev` - Start development server (port 3000)
+  [NOTE: dont run this command unless told to do so,always assume server is running]
 - `bun run build` - Production build
+  [NOTE: CI only]
 - `bun run test` - Run all tests (Vitest)
 - `bun run lint` - Run oxlint + eslint + typecheck
 - `bun run check` - Format code and fix eslint issues
