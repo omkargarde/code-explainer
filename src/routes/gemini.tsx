@@ -85,7 +85,9 @@ function GeminiChat() {
     }
   }, [new_question_error, cached_question_error]);
 
-  if (is_cache_question_loading || is_new_question_loading) return <div>Loading...</div>;
+  if (is_cache_question_loading || is_new_question_loading) {
+    return <div>Loading...</div>;
+  }
 
   if (isRateLimited && rateLimitInfo) {
     return (
