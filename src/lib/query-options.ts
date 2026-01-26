@@ -1,25 +1,29 @@
 import type { IQuestion } from "@/typing/questions";
 import type { IFeedback } from "@/typing/feedback";
 
-export const geminiQuestionOptions = {
-  queryKey: ["gemini-question"],
-  queryFn: async () => {
-    console.log("[query-options] geminiQuestionOptions queryFn called");
-    const response = await fetch("/api/gemini-question");
-    console.log("[query-options] Response status:", response.status);
-    if (!response.ok) {
-      if (response.status === 429) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Rate limit exceeded");
+export const gemini_question_options = (generate: boolean = false) =>
+  ({
+    queryKey: ["gemini-question", { generate }] as const,
+    queryFn: async () => {
+      console.log("[query-options] geminiQuestionOptions queryFn called", {
+        generate,
+      });
+      const url = `/api/gemini-question?generate=${generate}`;
+      const response = await fetch(url);
+      console.log("[query-options] Response status:", response.status);
+      if (!response.ok) {
+        if (response.status === 429) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Rate limit exceeded");
+        }
+        throw new Error("Failed to fetch data");
       }
-      throw new Error("Failed to fetch data");
-    }
-    return (await response.json()) as IQuestion;
-  },
-  enabled: false,
-} as const;
+      return (await response.json()) as IQuestion;
+    },
+    enabled: false,
+  }) as const;
 
-export const geminiFeedbackOptions = {
+export const gemini_feedback_options = {
   mutationKey: ["gemini-feedback"],
   mutationFn: async ({
     question,

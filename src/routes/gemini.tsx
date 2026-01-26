@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { QuestionCard } from "@/components/QuestionCard";
 import { AudioRecorder } from "@/components/AudioRecorder";
 import {
-  geminiFeedbackOptions,
-  geminiQuestionOptions,
+  gemini_feedback_options,
+  gemini_question_options,
 } from "@/lib/query-options";
 import { useRateLimitCountdown } from "@/hooks/useRateLimitCountdown";
 
@@ -48,29 +48,44 @@ export const Route = createFileRoute("/gemini")({
 });
 
 function GeminiChat() {
-  const { data, isLoading, error, refetch } = useQuery(geminiQuestionOptions);
+  const {
+    data: cached_question_data,
+    isLoading: is_cache_question_loading,
+    error: cached_question_error,
+    refetch: refetch_cached_question,
+  } = useQuery(gemini_question_options(false));
+
+  const {
+    data: new_question_data,
+    isLoading: is_new_question_loading,
+    error: new_question_error,
+    refetch: refetch_new_question,
+  } = useQuery(gemini_question_options(true));
+
   const { remainingSeconds, rateLimitInfo, isRateLimited } =
     useRateLimitCountdown(RATE_LIMIT_KEY);
 
-  const feedbackMutation = useMutation(geminiFeedbackOptions);
+  const feedbackMutation = useMutation(gemini_feedback_options);
 
   const handleSubmitAnswer = (audioBlob: Blob) => {
     console.log("[gemini] Submit answer triggered", { audioBlob });
-    if (data) {
-      feedbackMutation.mutate({ question: data, audioBlob });
+    const currentQuestion = new_question_data || cached_question_data;
+    if (currentQuestion) {
+      feedbackMutation.mutate({ question: currentQuestion, audioBlob });
     }
   };
 
   useEffect(() => {
-    if (error) {
-      const errorDetails = getErrorDetails(error);
+    const currentError = new_question_error || cached_question_error;
+    if (currentError) {
+      const errorDetails = getErrorDetails(currentError);
       if (errorDetails?.code === 429) {
         saveRateLimitInfo(errorDetails);
       }
     }
-  }, [error]);
+  }, [new_question_error, cached_question_error]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (is_cache_question_loading || is_new_question_loading) return <div>Loading...</div>;
 
   if (isRateLimited && rateLimitInfo) {
     return (
@@ -94,35 +109,52 @@ function GeminiChat() {
     );
   }
 
-  if (error) {
-    const errorDetails = getErrorDetails(error);
+  const currentError = new_question_error || cached_question_error;
+  if (currentError) {
+    const errorDetails = getErrorDetails(currentError);
 
     return (
       <div className="rounded-lg border border-red-500 bg-red-900/20 p-6 text-center text-red-400">
         <p className="text-lg font-semibold">
-          {errorDetails?.message || error.message}
+          {errorDetails?.message || currentError.message}
         </p>
       </div>
     );
   }
 
-  if (!data) {
+  const currentQuestion = new_question_data || cached_question_data;
+
+  if (!currentQuestion) {
     return (
       <div className="flex h-screen overflow-hidden items-center justify-center bg-gray-900 px-2">
-        <div className="mx-auto w-full max-w-3xl text-center">
+        <div className="mx-auto w-full max-w-3xl text-center space-y-4">
           <button
             onClick={() => {
               console.log(
-                "[gemini] Get Question button clicked, calling refetch",
+                "[gemini] Generate New Question button clicked, calling refetchNew",
               );
-              refetch();
+              refetch_new_question();
             }}
-            disabled={isRateLimited}
+            disabled={isRateLimited || is_new_question_loading}
             className="rounded-full bg-orange-500 px-8 py-4 font-semibold text-white hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600"
           >
             {isRateLimited
-              ? `Get Question (${remainingSeconds}s)`
-              : "Get Question"}
+              ? `Generate New Question (${remainingSeconds}s)`
+              : "Generate New Question"}
+          </button>
+          <button
+            onClick={() => {
+              console.log(
+                "[gemini] Get Cached Question button clicked, calling refetchCached",
+              );
+              refetch_cached_question();
+            }}
+            disabled={isRateLimited || is_cache_question_loading}
+            className="rounded-full bg-blue-500 px-8 py-4 font-semibold text-white hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600"
+          >
+            {isRateLimited
+              ? `Get Cached Question (${remainingSeconds}s)`
+              : "Get Cached Question"}
           </button>
         </div>
       </div>
@@ -132,7 +164,7 @@ function GeminiChat() {
   return (
     <div className="flex h-screen overflow-hidden items-center justify-center bg-gray-900 px-2">
       <div className="mx-auto w-full max-w-3xl overflow-y-auto max-h-screen">
-        <QuestionCard question={data} />
+        <QuestionCard question={currentQuestion} />
         <AudioRecorder
           onSubmit={handleSubmitAnswer}
           isSubmitting={feedbackMutation.isPending}
