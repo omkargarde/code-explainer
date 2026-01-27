@@ -10,10 +10,11 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        project: "./tsconfig.json", // ✅ correct relative path
-        tsconfigRootDir: import.meta.dirname, // ✅ works in flat config
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
-  ...oxlint.configs["flat/recommended"], // oxlint should be the last one
+  // oxlint should be the last one
+  ...oxlint.configs["flat/recommended"],
 ];

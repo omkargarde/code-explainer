@@ -10,7 +10,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between bg-gray-800 p-4 text-white shadow-lg">
+      <header className="sticky top-0 z-50 flex justify-between bg-gray-800 p-4 text-white shadow-lg">
         <div className="flex items-center">
           <button
             onClick={() => setIsOpen(true)}
@@ -90,6 +90,17 @@ export default function Header() {
             }}
           >
             <span className="font-medium">Chat</span>
+          </Link>
+          <Link
+            to="/gemini"
+            onClick={() => setIsOpen(false)}
+            className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
+            activeProps={{
+              className:
+                "flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2",
+            }}
+          >
+            <span className="font-medium">Gemini</span>
           </Link>
         </nav>
       </aside>

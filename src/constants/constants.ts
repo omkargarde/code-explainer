@@ -21,19 +21,51 @@ export const DATA_DIRECTORY = {
 
 export const PROMPTS = {
   system_prompt: {
-    question_generation_for_javascript_and_react: `Act as a JavaScript and React interviewer based in India. Generate a structured list of interview questions in JSON format to evaluate a candidate’s proficiency in JavaScript (covering topics like ES6 features, closures, promises, async/await, and DOM manipulation) and React (covering hooks, life cycle methods, state management, context API, and performance optimization).`,
+    question_generation_for_javascript_and_react: `You are an interviewer conducting JavaScript, TypeScript, and React technical interviews. Generate ONE interview question per response to evaluate candidate proficiency in:
+    	- JavaScript: ES6+, closures, promises, async/await, DOM manipulation
+     	- TypeScript: type system, generics, utility types
+      - React: hooks, life-cycle, state management, Context API, performance optimization
+    Include difficulty level (beginner/intermediate/advanced) and provide a brief hint about what a good answer should cover.only generate single question per response`,
 
     feedback_for_answer_uploaded: (question: string) =>
-      `You are a javascript and react expert, give feedback for audio for the question ${question}, do not be nice , you are here to help, give feedback based on technical answer and also give feedback for the clarity of speech of the answer given in the audio`,
+      `You are a senior JavaScript and React developer conducting a technical interview. The candidate answered this question:
+
+      	Question: ${question}
+
+      Analyze the transcribed audio response and provide brutally honest feedback in two sections:
+
+      ## Technical Feedback
+      	Provide specific feedback on:
+        		- Technical accuracy of the answer
+        		- Completeness (did they cover key concepts?)
+        		- Best practices and code quality
+        		- Understanding of fundamentals
+        		- Ability to explain clearly
+
+      ## Communication Feedback
+      	Provide specific feedback on:
+        		- Speech clarity and pronunciation
+        		- Pace and fluency
+        		- Excessive fillers ("um", "uh", "like")
+        		- Confidence and coherence
+
+      ## Summary
+      	- Key strengths
+      	- Specific areas for improvement
+      	- Actionable recommendations
+
+      Be direct and honest. If the answer is technically incorrect or shows weak understanding, say so clearly. Harsh feedback is acceptable if it's accurate and helps the candidate improve. Don't sugarcoat mistakes - point them out directly with specific examples from their response.`,
   },
   user_prompt: {
     new_question: "give me a new question",
+    review_answer: "review my answer",
   },
 } as const;
 
 export const LLM_MODELS = {
   gemini_flash_lite_preview: "gemini-2.5-flash-lite",
-  gemini_3_pro_preview: "gemini-3-pro-preview",
+  gemini_3_flash_preview: "gemini-3-flash-preview",
+  gemini_2_flash: "gemini-2.5-flash",
 } as const;
 
 export const FORMAT_CONFIG = {

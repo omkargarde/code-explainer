@@ -89,3 +89,40 @@
 //     </div>
 //   );
 // }
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+// Original shape
+type UserEntity = {
+  id: string;
+  username: string;
+  email: string;
+  passwordHash: string; // ⚠️ want to hide this
+  createdAt: Date;
+};
+
+// Extra fields added by the API layer
+type ApiMetadata = {
+  _links: { self: string };
+  role: "admin" | "guest";
+};
+
+type UserResponse = Omit<UserEntity, "passwordHash"> & ApiMetadata;
+// If you hover over 'UserResponse', you see:
+// type UserResponse = Omit<UserEntity, "passwordHash"> & ApiMetadata
+
+type PrettyUserResponse = Prettify<
+  Omit<UserEntity, "passwordHash"> & ApiMetadata
+>;
+// If you hover over 'PrettyUserResponse', you see the exact final shape:
+// type PrettyUserResponse = {
+//   id: string;
+//   username: string;
+//   email: string;
+//   createdAt: Date;
+//   _links: {
+//     self: string;
+//   };
+//   role: "admin" | "guest";
+// }

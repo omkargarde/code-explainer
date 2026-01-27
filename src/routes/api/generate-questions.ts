@@ -13,12 +13,13 @@ export const Route = createFileRoute("/api/generate-questions")({
 
           const result = streamText({
             model: google(LLM_MODELS.gemini_flash_lite_preview),
-            messages: convertToModelMessages(messages),
+            messages: await convertToModelMessages(messages),
             experimental_output: Output.object({
               schema: QuestionSchema,
             }),
             system: PROMPTS.system_prompt
               .question_generation_for_javascript_and_react as any,
+            temperature: 2,
           });
 
           return result.toUIMessageStreamResponse();

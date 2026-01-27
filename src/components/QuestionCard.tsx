@@ -10,7 +10,7 @@ interface QuestionCardProps {
 
 export function QuestionCard({ question }: QuestionCardProps) {
   return (
-    <div className="min-w-0 flex-1 space-y-4">
+    <section className="min-w-0 flex-1 space-y-4">
       <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-4">
         <div className="mb-3">
           <span className="inline-block rounded-full bg-orange-500/20 px-3 py-1 text-sm font-medium text-orange-300">
@@ -33,6 +33,6 @@ export function QuestionCard({ question }: QuestionCardProps) {
           </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

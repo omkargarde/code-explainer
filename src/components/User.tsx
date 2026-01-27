@@ -1,6 +1,6 @@
 import { ErrorComponent, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
-import { authClient, useSignIn } from "@/lib/auth-client";
+import { authClient, useSignIn } from "@/lib/auth/auth-client";
 
 /**
  * Render authentication controls reflecting the current session state.
